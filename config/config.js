@@ -41,7 +41,7 @@ const appConfig = {
     secret: process.env.JWT_SECRET || 'fallback_secret_key_for_dev_only',
     accessExpirationMinutes: parseInt(process.env.JWT_ACCESS_EXPIRATION_MINUTES, 10) || 30,
   },
-  corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:3001',
+  corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:3000',
 };
 
 

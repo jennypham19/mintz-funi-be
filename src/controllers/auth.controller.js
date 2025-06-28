@@ -2,32 +2,65 @@ const { StatusCodes } = require('http-status-codes');
 const catchAsync = require('../utils/catchAsync');
 const authService = require('../services/auth.service');
 const tokenService = require('../services/token.service');
+const config = require('../config');
 
 const login = catchAsync(async (req, res) => {
   const { username, password } = req.body;
   const user = await authService.loginWithUsernameAndPassword(username, password);
-  const token = tokenService.generateAuthToken(user.id, user.role);
+  const tokens = await tokenService.generateAuthTokens(user);
 
-  // Gửi token qua cookie để bảo mật hơn (httpOnly)
-  res.cookie('token', token, {
+  // Gửi refreshToken qua cookie httpOnly để tăng cường bảo mật
+  res.cookie('refreshToken', tokens.refreshToken.token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', // Chỉ gửi qua HTTPS ở môi trường production
-    maxAge: 24 * 60 * 60 * 1000, // 1 day
+    secure: config.env === 'production',
+    maxAge: config.jwt.refreshExpirationDays * 24 * 60 * 60 * 1000, // maxAge tính bằng mili giây
   });
 
-  // Xóa mật khẩu trước khi gửi về cho client
+  // Xóa mật khẩu trước khi gửi về client
   user.password = undefined;
 
+  // Trả về response đúng như cấu trúc frontend cần
   res.status(StatusCodes.OK).send({
     success: true,
     message: 'Đăng nhập thành công',
-    data: { user, token }, // Gửi cả token trong data để client có thể lưu vào state nếu cần
+    data: {
+      user,
+      accessToken: tokens.accessToken.token,
+      refreshToken: tokens.refreshToken.token, // Vẫn gửi về để client có thể linh hoạt sử dụng (tùy chọn)
+    },
   });
 });
 
 const logout = catchAsync(async (req, res) => {
-  res.clearCookie('token');
-  res.status(StatusCodes.OK).send({ success: true, message: 'Đăng xuất thành công' });
+  const refreshToken = req.cookies.refreshToken;
+  if (refreshToken) {
+    await authService.logout(refreshToken);
+  }
+  res.clearCookie('refreshToken');
+  res.status(StatusCodes.NO_CONTENT).send(); // 204 No Content là response chuẩn cho việc đăng xuất thành công
+});
+
+const refreshToken = catchAsync(async (req, res) => {
+  const oldRefreshToken = req.cookies.refreshToken;
+  if (!oldRefreshToken) {
+    throw new ApiError(StatusCodes.UNAUTHORIZED, 'Không tìm thấy refresh token');
+  }
+
+  const newTokens = await tokenService.refreshAuth(oldRefreshToken);
+
+  res.cookie('refreshToken', newTokens.refreshToken.token, {
+    httpOnly: true,
+    secure: config.env === 'production',
+    maxAge: config.jwt.refreshExpirationDays * 24 * 60 * 60 * 1000,
+  });
+
+  // Chỉ trả về access token mới
+  res.status(StatusCodes.OK).send({
+    success: true,
+    data: {
+      accessToken: newTokens.accessToken.token,
+    },
+  });
 });
 
 const getMe = catchAsync(async (req, res) => {
@@ -40,5 +73,6 @@ const getMe = catchAsync(async (req, res) => {
 module.exports = {
   login,
   logout,
+  refreshToken,
   getMe
 };
