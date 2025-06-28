@@ -5,7 +5,7 @@ const morgan = require('morgan');
 const path = require('path');
 const { StatusCodes } = require('http-status-codes');
 
-const config = require('./config/config');
+const config = require('./config');
 const logger = require('./config/logger');
 const ApiError = require('./utils/ApiError');
 const errorHandler = require('./middlewares/errorHandler');
@@ -26,6 +26,16 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
+const allowedOrigins = [];
+if (config.env === 'development') {
+  allowedOrigins.push('http://localhost:3000'); // Cho phép local dev
+
+}
+if (config.corsOriginFe) { // corsOriginFe là biến bạn định nghĩa trong config.js, lấy từ process.env.CORS_ORIGIN_FE
+  // Cho phép nhiều origin nếu CORS_ORIGIN_FE chứa nhiều URL cách nhau bằng dấu phẩy
+  config.corsOriginFe.split(',').forEach(origin => allowedOrigins.push(origin.trim()));
+}
+
 const corsOptions = {
     origin: function (origin, callback) {
       if (!origin || allowedOrigins.indexOf(origin) !== -1) {
@@ -42,6 +52,9 @@ const corsOptions = {
   };
   app.use(cors(corsOptions));
 
+  if (config.env === 'development') {
+    app.use(morgan('dev'));
+  }
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { StatusCodes } = require('http-status-codes');
-const config = require('../../config/config');
+const config = require('../../src/config');
 const { User } = require('../../models');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
@@ -27,7 +27,6 @@ const protect = catchAsync(async (req, res, next) => {
     return next(new ApiError(StatusCodes.UNAUTHORIZED, 'Người dùng của token này không còn tồn tại.'));
   }
 
-  // Gán user vào request để các middleware/controller sau có thể sử dụng
   req.user = currentUser;
   next();
 });
