@@ -4,7 +4,7 @@ const http = require('http');
 const app = require('./app'); 
 const config = require('../src/config'); 
 const logger = require('./config/logger.js'); 
-const { sequelize } = require('../models'); 
+const { sequelize } = require('../src/models'); 
 
 let httpServer; 
 

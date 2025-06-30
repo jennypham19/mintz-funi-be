@@ -1,4 +1,4 @@
-const { User } = require('../../models');
+const { User, Op } = require('../models');
 const bcrypt = require('bcryptjs');
 const ApiError = require('../utils/ApiError');
 const { StatusCodes } = require('http-status-codes');
@@ -55,11 +55,42 @@ const deleteUserById = async (userId, currentAdminId) => {
   return user;
 };
 
+const queryUsers = async (queryOptions, currentUserId) => {
+  const { page, limit, role } = queryOptions;
+  const offset = (page - 1) * limit;
+
+  const whereConditions = {
+    id: { [Op.ne]: currentUserId }, 
+  };
+
+  if (role) {
+    whereConditions.role = role;
+  }
+  
+  const { count, rows: users } = await User.findAndCountAll({
+    where: whereConditions,
+    limit,
+    offset,
+    attributes: { exclude: ['password'] },
+    order: [['createdAt', 'DESC']],
+  });
+  
+  const totalPages = Math.ceil(count / limit);
+
+  return {
+    users,
+    totalPages,
+    currentPage: page,
+    totalUsers: count,
+  };
+};
+
 
 module.exports = {
   createUser,
   getAllUsers,
   getUserById,
   updateUserById,
-  deleteUserById
+  deleteUserById,
+  queryUsers,
 };

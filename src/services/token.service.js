@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const moment = require('moment'); // Cần cài đặt: npm install moment
 const { StatusCodes } = require('http-status-codes');
 const config = require('../config');
-const { Token, User } = require('../../models'); 
+const { Token, User } = require('../models'); 
 const { tokenTypes } = require('../config/tokens');
 const ApiError = require('../utils/ApiError');
 

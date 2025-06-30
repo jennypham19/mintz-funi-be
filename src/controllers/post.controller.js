@@ -1,7 +1,8 @@
 // src/controllers/post.controller.js
 const { StatusCodes } = require('http-status-codes');
 const catchAsync = require('../utils/catchAsync');
-const { postService } = require('../services/post.service');
+const postService = require('../services/post.service');
+const pick = require('../utils/pick');
 
 const createPost = catchAsync(async (req, res) => {
   const post = await postService.createPost(req.body, req.user.id);
@@ -9,13 +10,15 @@ const createPost = catchAsync(async (req, res) => {
 });
 
 const getPostsForDashboard = catchAsync(async (req, res) => {
-  const posts = await postService.queryPostsForDashboard();
-  res.status(StatusCodes.OK).send({ success: true, data: posts });
+  const queryOptions = pick(req.query, ['page', 'limit', 'status', 'authorId']);
+  const result = await postService.queryPosts(queryOptions);
+  res.status(StatusCodes.OK).send({ success: true, data: result });
+
 });
 
 const getPublicPosts = catchAsync(async (req, res) => {
-    const posts = await postService.getApprovedPosts();
-    res.status(StatusCodes.OK).send({ success: true, data: posts });
+  const posts = await postService.getApprovedPosts();
+  res.status(StatusCodes.OK).send({ success: true, data: posts });
 });
 
 const getPost = catchAsync(async (req, res) => {
@@ -29,8 +32,8 @@ const updatePost = catchAsync(async (req, res) => {
 });
 
 const reviewPost = catchAsync(async (req, res) => {
-    const post = await postService.reviewPostById(req.params.id, req.body);
-    res.status(StatusCodes.OK).send({ success: true, message: 'Duyệt bài viết thành công.', data: post });
+  const post = await postService.reviewPostById(req.params.id, req.body);
+  res.status(StatusCodes.OK).send({ success: true, message: 'Duyệt bài viết thành công.', data: post });
 });
 
 const deletePost = catchAsync(async (req, res) => {

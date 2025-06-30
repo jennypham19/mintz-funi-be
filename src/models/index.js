@@ -8,7 +8,7 @@ const Sequelize = require('sequelize');
 const process = require('process');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
-const configFromFile = require(__dirname + '/../config/config.js');
+const configFromFile = require(__dirname + '/../config/index.js');
 const config = configFromFile[env];
 const db = {};
 
@@ -42,5 +42,7 @@ Object.keys(db).forEach(modelName => {
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+
+db.Op = Sequelize.Op;
 
 module.exports = db;

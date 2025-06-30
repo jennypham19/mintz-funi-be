@@ -1,6 +1,6 @@
 // src/services/post.service.js
 
-const { Post, User } = require('../../models');
+const { Post, User } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { StatusCodes } = require('http-status-codes');
 
@@ -24,26 +24,40 @@ const createPost = async (postBody, authorId) => {
   return post;
 };
 
-/**
- * Lấy danh sách bài viết cho trang dashboard (bao gồm tất cả trạng thái)
- * @returns {Promise<Post[]>}
- */
-const queryPostsForDashboard = async () => {
-  const posts = await Post.findAll({
+const queryPosts = async (queryOptions) => {
+  const { page, limit, status, authorId } = queryOptions;
+  const offset = (page - 1) * limit;
+
+  const whereConditions = {};
+  if (status) {
+    whereConditions.status = status;
+  }
+  if (authorId) {
+    whereConditions.authorId = authorId;
+  }
+
+  const { count, rows: posts } = await Post.findAndCountAll({
+    where: whereConditions,
+    limit,
+    offset,
     include: {
-      model: User,
-      as: 'author',
-      attributes: ['id', 'fullName'],
+        model: User,
+        as: 'author',
+        attributes: ['id', 'fullName'],
     },
     order: [['createdAt', 'DESC']],
   });
-  return posts;
+  
+  const totalPages = Math.ceil(count / limit);
+
+  return {
+    posts,
+    totalPages,
+    currentPage: page,
+    totalPosts: count,
+  };
 };
 
-/**
- * Lấy danh sách các bài viết đã được duyệt (dùng cho trang public)
- * @returns {Promise<Post[]>}
- */
 const getApprovedPosts = async () => {
   const posts = await Post.findAll({
     where: { status: 'approved' },
@@ -52,11 +66,6 @@ const getApprovedPosts = async () => {
   return posts;
 };
 
-/**
- * Lấy chi tiết một bài viết bằng ID
- * @param {number} postId
- * @returns {Promise<Post>}
- */
 const getPostById = async (postId) => {
   const post = await Post.findByPk(postId, {
     include: {
@@ -71,13 +80,6 @@ const getPostById = async (postId) => {
   return post;
 };
 
-/**
- * Cập nhật một bài viết (chỉ nhân viên tạo bài mới được cập nhật)
- * @param {number} postId
- * @param {Object} updateBody
- * @param {Object} currentUser - Người dùng đang thực hiện hành động
- * @returns {Promise<Post>}
- */
 const updatePostById = async (postId, updateBody, currentUser) => {
   const post = await getPostById(postId);
 
@@ -98,12 +100,6 @@ const updatePostById = async (postId, updateBody, currentUser) => {
   return post;
 };
 
-/**
- * Admin duyệt một bài viết (approved/rejected)
- * @param {number} postId
- * @param {Object} reviewBody - Chứa status và rejectionReason
- * @returns {Promise<Post>}
- */
 const reviewPostById = async (postId, reviewBody) => {
     const post = await getPostById(postId);
     const { status, rejectionReason } = reviewBody;
@@ -119,12 +115,6 @@ const reviewPostById = async (postId, reviewBody) => {
     return post;
 }
 
-/**
- * Xóa một bài viết
- * @param {number} postId
- * @param {Object} currentUser
- * @returns {Promise<Post>}
- */
 const deletePostById = async (postId, currentUser) => {
   const post = await getPostById(postId);
 
@@ -139,7 +129,7 @@ const deletePostById = async (postId, currentUser) => {
 
 module.exports = {
   createPost,
-  queryPostsForDashboard,
+  queryPosts,
   getApprovedPosts,
   getPostById,
   updatePostById,

@@ -15,11 +15,11 @@ const createPost = {
 };
 
 const getPosts = {
-  // Hiện tại không cần query params, nhưng để sẵn để có thể mở rộng sau
-  // Ví dụ: /posts?status=pending&authorId=2
   query: Joi.object().keys({
     status: Joi.string().valid('pending', 'approved', 'rejected'),
     authorId: Joi.number().integer(),
+    page: Joi.number().integer().min(1).default(1),
+    limit: Joi.number().integer().min(1).max(100).default(2),
   }),
 };
 
