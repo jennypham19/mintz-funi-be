@@ -12,7 +12,8 @@ const createUser = {
 const getUsers = {
   query: Joi.object().keys({
     role: Joi.string().valid('admin', 'employee'),
-    // Thêm các query khác để filter/sort nếu cần
+    page: Joi.number().integer().min(1).default(1),
+    limit: Joi.number().integer().min(1).max(100).default(6), 
   }),
 };
 

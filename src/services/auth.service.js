@@ -1,4 +1,4 @@
-const { User } = require('../../models');
+const { User } = require('../models');
 const bcrypt = require('bcryptjs');
 const { StatusCodes } = require('http-status-codes');
 const ApiError = require('../utils/ApiError');

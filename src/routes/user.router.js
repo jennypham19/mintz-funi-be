@@ -6,17 +6,38 @@ const  userController  = require('../controllers/user.controller');
 
 const router = express.Router();
 
-router.use(protect, authorize('admin'));
+router.use(protect);
 
 router
   .route('/')
-  .post(validate(userValidation.createUser), userController.createUser)
-  .get(validate(userValidation.getUsers), userController.getUsers);
+  .post(
+    authorize('admin'), 
+    validate(userValidation.createUser), 
+    userController.createUser
+  )
+  .get(
+    authorize('admin'),
+    validate(userValidation.getUsers), 
+    userController.getUserDashboard
+  );
 
+// Chỉ ADMIN mới có quyền xem chi tiết, cập nhật, và xóa user khác
 router
   .route('/:id')
-  .get(validate(userValidation.getUser), userController.getUser)
-  .patch(validate(userValidation.updateUser), userController.updateUser)
-  .delete(validate(userValidation.deleteUser), userController.deleteUser);
+  .get(
+    authorize('admin'), 
+    validate(userValidation.getUser), 
+    userController.getUser
+  )
+  .patch(
+    authorize('admin'),
+    validate(userValidation.updateUser), 
+    userController.updateUser
+  )
+  .delete(
+    authorize('admin'),
+    validate(userValidation.deleteUser), 
+    userController.deleteUser
+  );
 
 module.exports = router;
