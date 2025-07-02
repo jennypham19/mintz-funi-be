@@ -7,6 +7,15 @@ const login = {
   }),
 };
 
+const changePassword = {
+  body: Joi.object().keys({
+    password: Joi.string().required(),
+    is_default: Joi.number().optional(),
+    user_id: Joi.number().integer().optional()
+  }),
+};
+
 module.exports = {
   login,
+  changePassword
 };
