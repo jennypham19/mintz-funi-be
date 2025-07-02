@@ -3,23 +3,36 @@ const { protect, authorize } = require('../middlewares/auth');
 const validate = require('../middlewares/validate');
 const  userValidation  = require('../validations/user.validation');
 const  userController  = require('../controllers/user.controller');
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() });
 
 const router = express.Router();
 
 router.use(protect);
 
 router
-  .route('/')
+  .route('/create-account')
   .post(
-    authorize('admin'), 
+    authorize('admin'),
+    upload.single('avatar_url'), 
     validate(userValidation.createUser), 
     userController.createUser
   )
+
+router
+  .route('/')
   .get(
     authorize('admin'),
     validate(userValidation.getUsers), 
     userController.getUserDashboard
-  );
+  )
+router
+  .route('/get-all-users')
+  .get(
+    authorize('admin'),
+    validate(userValidation.getUsers), 
+    userController.getUsers
+);
 
 // Chỉ ADMIN mới có quyền xem chi tiết, cập nhật, và xóa user khác
 router
@@ -29,15 +42,21 @@ router
     validate(userValidation.getUser), 
     userController.getUser
   )
-  .patch(
-    authorize('admin'),
+router
+  .route('/update/:id')
+  .put(
+    authorize('admin'), 
+    upload.single('avatar_url'), 
     validate(userValidation.updateUser), 
     userController.updateUser
-  )
-  .delete(
-    authorize('admin'),
+  );
+
+router
+  .route('/delete/:id')
+  .patch(
+    authorize('admin'), 
     validate(userValidation.deleteUser), 
     userController.deleteUser
-  );
+);
 
 module.exports = router;
