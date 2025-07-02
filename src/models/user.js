@@ -14,7 +14,22 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM('admin', 'employee'),
       allowNull: false,
       defaultValue: 'employee'
-    }
+    },
+    email: { type: DataTypes.STRING, allowNull: true},
+    address: { type: DataTypes.STRING, allowNull: true},
+    phone_number: { type: DataTypes.STRING, allowNull: true},
+    captchaCode: { type: DataTypes.STRING, allowNull: true},
+    avatar_url: { type: DataTypes.STRING, allowNull: true},
+    is_deleted: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
+    },
+    is_default: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1
+    },
   }, {
     sequelize,
     modelName: 'User',

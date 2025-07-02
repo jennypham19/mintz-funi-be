@@ -69,10 +69,16 @@ const getMe = catchAsync(async (req, res) => {
   res.status(StatusCodes.OK).send({ success: true, data: user });
 });
 
+const changePassword = catchAsync(async (req, res) => {
+  await authService.changePassword(req.body);
+  res.status(StatusCodes.OK).send({success: true, message: 'Thay đổi mật khẩu thành công'})
+})
+
 
 module.exports = {
   login,
   logout,
   refreshToken,
-  getMe
+  getMe,
+  changePassword
 };

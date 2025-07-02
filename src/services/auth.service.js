@@ -3,6 +3,8 @@ const bcrypt = require('bcryptjs');
 const { StatusCodes } = require('http-status-codes');
 const ApiError = require('../utils/ApiError');
 const tokenService = require('./token.service');
+const userService = require('./user.service');
+
 
 const loginWithUsernameAndPassword = async (username, password) => {
   const user = await User.findOne({ where: { username } });
@@ -12,6 +14,17 @@ const loginWithUsernameAndPassword = async (username, password) => {
   return user;
 };
 
+const changePassword = async(updateBody) => {
+  const user = await userService.getUserById(updateBody.user_id);
+  if (updateBody.password) {
+    updateBody.password = await bcrypt.hash(updateBody.password, 10);
+  }
+  Object.assign(user, updateBody);
+  await user.save();
+  return user;
+}
+
 module.exports = {
   loginWithUsernameAndPassword,
+  changePassword
 };

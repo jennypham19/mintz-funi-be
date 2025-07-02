@@ -3,9 +3,15 @@ const Joi = require('joi');
 const createUser = {
   body: Joi.object().keys({
     username: Joi.string().required(),
-    password: Joi.string().required().min(6),
+    password: Joi.string().optional(),
+    // password: Joi.string().required().min(6),
     fullName: Joi.string().required(),
     role: Joi.string().required().valid('admin', 'employee'),
+    email: Joi.string().optional(),
+    address: Joi.string().optional(),
+    phone_number: Joi.string().optional(),
+    avatar_url: Joi.string().optional(),
+    captchaCode: Joi.string().optional(),
   }),
 };
 
@@ -30,7 +36,13 @@ const updateUser = {
   body: Joi.object()
     .keys({
       fullName: Joi.string(),
-      password: Joi.string().min(6),
+      username: Joi.string().required(),
+      password: Joi.string().optional(),
+      email: Joi.string().required(),
+      address: Joi.string().optional(),
+      phone_number: Joi.string().optional(),
+      avatar_url: Joi.string().optional(),
+      captchaCode: Joi.string().optional(),
       // Admin có thể đổi role
       role: Joi.string().valid('admin', 'employee'),
     })
@@ -41,6 +53,9 @@ const deleteUser = {
   params: Joi.object().keys({
     id: Joi.number().integer().required(),
   }),
+  body: Joi.object().keys({
+    is_deleted: Joi.number().integer().required(),
+  })
 };
 
 module.exports = {
