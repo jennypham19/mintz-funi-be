@@ -17,6 +17,15 @@ const getUserDashboard = catchAsync(async (req, res) => {
   res.status(StatusCodes.OK).send({ success: true, data: result });
 });
 
+const getUsers= catchAsync(async (req, res) => {
+  const page = parseInt(req.query.page);
+  const size = parseInt(req.query.size);
+  const filter = pick(req.query, ['role']);
+  
+  const result = await userService.getAllUsers({ page, size, filter});
+  res.status(StatusCodes.OK).send({ success: true, data: result });
+});
+
 
 const getUser = catchAsync(async (req, res) => {
     const user = await userService.getUserById(req.params.id);
@@ -40,5 +49,6 @@ module.exports = {
   getUserDashboard,
   getUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  getUsers
 };
