@@ -1,7 +1,8 @@
 // src/controllers/contact.controller.js
 const { StatusCodes } = require('http-status-codes');
 const catchAsync = require('../utils/catchAsync');
-const { contactService } = require('../services/contact.service');
+const contactService  = require('../services/contact.service');
+const pick = require('../utils/pick');
 
 const createContact = catchAsync(async (req, res) => {
   const contact = await contactService.createContact(req.body);
@@ -9,8 +10,14 @@ const createContact = catchAsync(async (req, res) => {
 });
 
 const getContacts = catchAsync(async (req, res) => {
-  const contacts = await contactService.queryContacts();
-  res.status(StatusCodes.OK).send({ success: true, data: contacts });
+  const queryOptions = pick(req.query, ['page', 'limit']);
+  const contacts = await contactService.queryContacts(queryOptions);
+  res.status(StatusCodes.OK).send({ success: true, message: "Lấy danh sách thành công" ,data: contacts });
+});
+
+const getContact = catchAsync(async (req, res) => {
+  const contact = await contactService.getContactById(req.params.id);
+  res.status(StatusCodes.OK).send({ success: true, data: contact });
 });
 
 const markContactAsRead = catchAsync(async (req, res) => {
@@ -28,4 +35,5 @@ module.exports = {
   getContacts,
   markContactAsRead,
   deleteContact,
+  getContact
 };
