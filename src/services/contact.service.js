@@ -1,6 +1,6 @@
 // src/services/contact.service.js
 
-const { Contact } = require('../models');
+const { Contact, Op } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { StatusCodes } = require('http-status-codes');
 
@@ -15,9 +15,19 @@ const createContact = async (contactBody) => {
 
 const queryContacts = async (queryOptions) => {
   try {
-    const { page, limit} = queryOptions;
+    const { page, limit, searchTerm} = queryOptions;
     const offset = page * limit;
+    
+    const whereClause = {}
+    if(searchTerm){
+      whereClause[Op.or] = [
+        {name: { [Op.iLike]: `%${searchTerm}%`}},
+        {email: { [Op.iLike]: `%${searchTerm}%`}},
+        {phone: { [Op.iLike]: `%${searchTerm}%`}},
+      ]
+    }
     const { count, rows: contacts} = await Contact.findAndCountAll({
+      where: whereClause,
       limit,
       offset,
       order: [['createdAt', 'DESC']]

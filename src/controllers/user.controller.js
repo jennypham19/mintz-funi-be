@@ -10,7 +10,7 @@ const createUser = catchAsync(async (req, res) => {
 });
 
 const getUserDashboard = catchAsync(async (req, res) => {
-  const queryOptions = pick(req.query, ['page', 'limit', 'role']);
+  const queryOptions = pick(req.query, ['page', 'limit', 'role', 'status', 'searchTerm']);
   const currentUserId = req.user.id;
 
   const result = await userService.queryUsers(queryOptions, currentUserId);
@@ -21,8 +21,9 @@ const getUsers= catchAsync(async (req, res) => {
   const page = parseInt(req.query.page);
   const size = parseInt(req.query.size);
   const filter = pick(req.query, ['role']);
-  
-  const result = await userService.getAllUsers({ page, size, filter});
+  const searchTerm = req.query.searchTerm;
+  const status = req.query.status
+  const result = await userService.getAllUsers({ page, size, filter, searchTerm, status});
   res.status(StatusCodes.OK).send({ success: true, data: result });
 });
 
@@ -38,6 +39,11 @@ const updateUser = catchAsync(async (req, res) => {
   res.status(StatusCodes.OK).send({ success: true, message: 'Cập nhật thành công', data: user });
 });
 
+const resetUser = catchAsync(async (req, res) => {
+    const user = await userService.resetUser(req.params.id);
+    res.status(StatusCodes.OK).send({ success: true, message: "Reset password users fetched successfully", data: user });
+});
+
 const deleteUser = catchAsync(async (req, res) => {
     await userService.deleteUserById(req.params.id, req.body);
     res.status(StatusCodes.OK).send({success: true, message: 'Xóa tài khoản thành công'});
@@ -50,5 +56,6 @@ module.exports = {
   getUser,
   updateUser,
   deleteUser,
-  getUsers
+  getUsers, 
+  resetUser
 };

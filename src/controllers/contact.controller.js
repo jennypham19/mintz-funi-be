@@ -10,7 +10,7 @@ const createContact = catchAsync(async (req, res) => {
 });
 
 const getContacts = catchAsync(async (req, res) => {
-  const queryOptions = pick(req.query, ['page', 'limit']);
+  const queryOptions = pick(req.query, ['page', 'limit', 'searchTerm']);
   const contacts = await contactService.queryContacts(queryOptions);
   res.status(StatusCodes.OK).send({ success: true, message: "Lấy danh sách thành công" ,data: contacts });
 });
