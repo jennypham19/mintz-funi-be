@@ -26,33 +26,48 @@ const createUserService = async (userBody, file) => {
       userBody.avatar_url = avatarUrl;
   }
   // Tự sinh password ngẫu nhiên dài 8 ký tự
-  const plainPassword = crypto.randomBytes(6).toString('base64').slice(0,6);
+  // const plainPassword = crypto.randomBytes(6).toString('base64').slice(0,6);
   // Hash bằng bcrypt
-  const hashedPassword = await bcrypt.hash(plainPassword, 10);
+  const hashedPassword = await bcrypt.hash(userBody.password, 10);
   const user = await User.create({ ...userBody, password: hashedPassword, is_default: 1 });
-  // user.password = undefined; // Không trả về password
-  await mailService.sendMail({
-    to: userBody.email,
-    subject: 'Thông tin đăng nhập hệ thống Mintz',
-    text: `Xin chào ${userBody.username}, mật khẩu tạm của bạn là: ${plainPassword}`,
-    html: getWelcomeEmailTemplate(userBody.fullName, userBody.username, plainPassword, 'http://localhost:3000/auth/login')
-  })
-  const newUser = user.toJSON();
-  const userReturn = {
-    ...newUser,
-    password: plainPassword
-  }
+  user.password = undefined; // Không trả về password
+  // await mailService.sendMail({
+  //   to: userBody.email,
+  //   subject: 'Thông tin đăng nhập hệ thống Mintz',
+  //   text: `Xin chào ${userBody.username}, mật khẩu tạm của bạn là: ${plainPassword}`,
+  //   html: getWelcomeEmailTemplate(userBody.fullName, userBody.username, plainPassword, 'http://localhost:3000/auth/login')
+  // })
+  // const newUser = user.toJSON();
+  // const userReturn = {
+  //   ...newUser,
+  //   password: plainPassword
+  // }
   
-  return userReturn;
+  return user;
   
 };
 
-const getAllUsers = async ({ page, size, filter}) => {
+const getAllUsers = async ({ page, size, filter, searchTerm, status}) => {
     // filter có thể là { role: 'employee' }
     try {
       const offset = page * size;
+
+      const whereClause = { ...filter };
+      
+      if(searchTerm){
+        whereClause[Op.or] = [
+          { fullName: { [Op.iLike]: `%${searchTerm}%`} },
+          { email: { [Op.iLike]: `%${searchTerm}%`} },
+          { phone_number: { [Op.iLike]: `%${searchTerm}%`} },
+        ]
+      }
+      
+      if (status !== undefined && status !== 'all') {
+        whereClause.is_deleted = status;
+      }
+
       const {count, rows: users} = await User.findAndCountAll({
-          where: filter,
+          where: whereClause,
           attributes: { exclude: ['password'] },
           order: [
             ['is_deleted', 'ASC'],
@@ -111,16 +126,42 @@ const deleteUserById = async (userId, updateBody) => {
   return user;
 };
 
+const resetUser = async(useId) => {
+  const user = await getUserById(useId);
+  // Tự sinh password ngẫu nhiên dài 8 ký tự
+  const plainPassword = crypto.randomBytes(6).toString('base64').slice(0,6);
+  // Hash bằng bcrypt
+  const hashedPassword = await bcrypt.hash(plainPassword, 10);
+  await user.update({ password: hashedPassword, is_default: 1 });
+  user.password = undefined; // Không trả về password
+  const newUser = user.toJSON();
+  const userReturn = {
+    ...newUser,
+    password: plainPassword
+  }
+
+  return userReturn;
+}
+
 const queryUsers = async (queryOptions, currentUserId) => {
-  const { page, limit, role } = queryOptions;
+  const { page, limit, role, status, searchTerm } = queryOptions;
   const offset = (page - 1) * limit;
 
   const whereConditions = {
     id: { [Op.ne]: currentUserId }, 
+    is_deleted: status
   };
 
   if (role) {
     whereConditions.role = role;
+  }
+
+  if(searchTerm){
+    whereConditions[Op.or] = [
+      { fullName: { [Op.iLike]: `%${searchTerm}%`} },
+      { email: { [Op.iLike]: `%${searchTerm}%`} },
+      { phone_number: { [Op.iLike]: `%${searchTerm}%`} },
+    ]
   }
   
   const { count, rows: users } = await User.findAndCountAll({
@@ -149,4 +190,5 @@ module.exports = {
   updateUserById,
   deleteUserById,
   queryUsers,
+  resetUser
 };
