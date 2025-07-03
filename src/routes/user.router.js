@@ -52,6 +52,14 @@ router
   );
 
 router
+  .route('/reset/:id')
+  .patch(
+    authorize('admin'), 
+    validate(userValidation.getUser), 
+    userController.resetUser
+  );
+
+router
   .route('/delete/:id')
   .patch(
     authorize('admin'), 

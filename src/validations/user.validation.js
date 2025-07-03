@@ -3,8 +3,8 @@ const Joi = require('joi');
 const createUser = {
   body: Joi.object().keys({
     username: Joi.string().required(),
-    password: Joi.string().optional(),
-    // password: Joi.string().required().min(6),
+    // password: Joi.string().optional(),
+    password: Joi.string().required().min(6),
     fullName: Joi.string().required(),
     role: Joi.string().required().valid('admin', 'employee'),
     email: Joi.string().optional(),
@@ -20,6 +20,8 @@ const getUsers = {
     role: Joi.string().valid('admin', 'employee'),
     page: Joi.number().integer().min(1).default(1),
     limit: Joi.number().integer().min(1).max(100).default(6), 
+    searchTerm: Joi.string().optional(),
+    status: Joi.number().integer().optional()
   }),
 };
 
@@ -35,10 +37,10 @@ const updateUser = {
   }),
   body: Joi.object()
     .keys({
-      fullName: Joi.string(),
+      fullName: Joi.string().required(),
       username: Joi.string().required(),
       password: Joi.string().optional(),
-      email: Joi.string().required(),
+      email: Joi.string().optional(),
       address: Joi.string().optional(),
       phone_number: Joi.string().optional(),
       avatar_url: Joi.string().optional(),
