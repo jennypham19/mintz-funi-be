@@ -8,12 +8,15 @@ const contactController = require('../controllers/contact.controller');
 const router = express.Router();
 
 // Route này là public, không cần đăng nhập
-router.post('/', validate(contactValidation.createContact), contactController.createContact);
+router.post('/send', validate(contactValidation.createContact), contactController.createContact);
 
 // Các route dưới đây yêu cầu đăng nhập và có vai trò
 router.use(protect, authorize('admin', 'employee'));
 
 router.get('/', contactController.getContacts);
+
+//Lấy chi tiết
+router.get('/:id', validate(contactValidation.getContact), contactController.getContact);
 
 // Đánh dấu đã đọc
 router.patch('/:id/read', validate(contactValidation.markAsRead), contactController.markContactAsRead);
