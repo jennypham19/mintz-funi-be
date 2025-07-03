@@ -13,7 +13,7 @@ router.post('/send', validate(contactValidation.createContact), contactControlle
 // Các route dưới đây yêu cầu đăng nhập và có vai trò
 router.use(protect, authorize('admin', 'employee'));
 
-router.get('/', contactController.getContacts);
+router.get('/', validate(contactValidation.getContacts), contactController.getContacts);
 
 //Lấy chi tiết
 router.get('/:id', validate(contactValidation.getContact), contactController.getContact);

@@ -1,6 +1,14 @@
 // src/validations/contact.validation.js
 const Joi = require('joi');
 
+const getContacts = {
+  query: Joi.object().keys({
+    page: Joi.number().integer().min(1).default(1),
+    limit: Joi.number().integer().min(1).max(100).default(12), 
+    searchTerm: Joi.string().optional(),
+  }),
+};
+
 const createContact = {
   body: Joi.object().keys({
     name: Joi.string().required(),
@@ -29,4 +37,5 @@ module.exports = {
   getContact,
   markAsRead,
   deleteContact,
+  getContacts
 };
