@@ -5,16 +5,33 @@ const ApiError = require('../utils/ApiError');
 const { StatusCodes } = require('http-status-codes');
 
 const createContact = async (contactBody) => {
-  const { name, email, message } = contactBody;
+  const { name, email, phone, title, message } = contactBody;
   // Validation cơ bản ở service layer
-  if (!name || !email || !message) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, 'Vui lòng điền các trường Tên, Email, và Nội dung.');
+  if (!name || !email || !message || !phone || !title) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Vui lòng điền các trường Tên, Email, Số điện thoại, Tiêu đề và Nội dung.');
   }
   return await Contact.create(contactBody);
 };
 
-const queryContacts = async () => {
-  return await Contact.findAll({ order: [['createdAt', 'DESC']] });
+const queryContacts = async (queryOptions) => {
+  try {
+    const { page, limit} = queryOptions;
+    const offset = page * limit;
+    const { count, rows: contacts} = await Contact.findAndCountAll({
+      limit,
+      offset,
+      order: [['createdAt', 'DESC']]
+    })
+    const totalPages = Math.ceil(count / limit);
+    return {
+      contacts,
+      totalPages,
+      currentPage: page,
+      totalContact: count,
+    }; 
+  } catch (error) {
+    throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, "Lấy danh sách thất bại " + error.message)
+  }
 };
 
 const getContactById = async (contactId) => {

@@ -6,7 +6,11 @@ const createContact = {
     name: Joi.string().required(),
     email: Joi.string().required().email(),
     phone: Joi.string().optional().allow(null, ''),
+    title: Joi.string().required(),
     message: Joi.string().required(),
+    createdAt: Joi.string().optional(),
+    updatedAt: Joi.string().optional(),
+    isRead: Joi.number().integer().required()
   }),
 };
 
