@@ -4,22 +4,19 @@ const { Post, User } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { StatusCodes } = require('http-status-codes');
 
-/**
- * Tạo một bài viết mới với trạng thái 'pending'
- * @param {Object} postBody - Dữ liệu bài viết từ request body
- * @param {number} authorId - ID của nhân viên tạo bài
- * @returns {Promise<Post>}
- */
 const createPost = async (postBody, authorId) => {
-  const { title, content } = postBody;
-  if (!title || !content) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, 'Tiêu đề và nội dung không được để trống.');
-  }
+  const { title, content, imageUrl, category, time, authorName } = postBody; 
+  if (!title || !content) { /* ... */ }
+
   const post = await Post.create({
     title,
     content,
+    imageUrl,
+    category, 
+    time,
+    authorName,
     authorId,
-    status: 'pending', // Mặc định khi tạo là chờ duyệt
+    status: 'pending',
   });
   return post;
 };
