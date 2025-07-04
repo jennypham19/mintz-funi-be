@@ -9,7 +9,7 @@ const createPost = catchAsync(async (req, res) => {
   res.status(StatusCodes.CREATED).send({ success: true, message: 'Tạo bài viết thành công, đang chờ duyệt.', data: post });
 });
 
-const getPostsForDashboard = catchAsync(async (req, res) => {
+const getPosts = catchAsync(async (req, res) => {
   const queryOptions = pick(req.query, ['page', 'limit', 'status', 'authorId']);
   const result = await postService.queryPosts(queryOptions);
   res.status(StatusCodes.OK).send({ success: true, data: result });
@@ -41,12 +41,21 @@ const deletePost = catchAsync(async (req, res) => {
   res.status(StatusCodes.NO_CONTENT).send();
 });
 
+const uploadPostImage = catchAsync(async (req, res) => {
+  if (!req.file) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'Vui lòng chọn một file để upload.');
+  }
+  const imageUrl = `/uploads/posts/${req.file.filename}`;
+  res.status(StatusCodes.OK).send({ success: true, message: 'Upload ảnh thành công', data: { imageUrl } });
+});
+
 module.exports = {
   createPost,
-  getPostsForDashboard,
+  getPosts,
   getPublicPosts,
   getPost,
   updatePost,
   reviewPost,
   deletePost,
+  uploadPostImage,
 };
