@@ -11,6 +11,24 @@ const createPost = {
       'string.empty': 'Nội dung không được để trống.',
       'any.required': 'Nội dung là trường bắt buộc.',
     }),
+    imageUrl: Joi.string().required().messages({
+        'string.empty': 'Đường dẫn ảnh không được để trống.',
+        'any.required': 'Đường dẫn ảnh là bắt buộc.',
+    }),
+
+    category: Joi.string().required().messages({
+        'string.empty': 'Thể loại không được để trống.',
+        'any.required': 'Thể loại là trường bắt buộc.',
+    }),
+    time: Joi.string().isoDate().required().messages({ 
+        'string.empty': 'Thời gian không được để trống.',
+        'any.required': 'Thời gian là trường bắt buộc.',
+        'date.isoDate': 'Định dạng thời gian không hợp lệ.',
+    }),
+    authorName: Joi.string().required().messages({
+        'string.empty': 'Tên tác giả không được để trống.',
+        'any.required': 'Tên tác giả là trường bắt buộc.',
+    }),
   }),
 };
 

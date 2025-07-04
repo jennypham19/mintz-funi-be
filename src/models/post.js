@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
   Post.init({
     title: { type: DataTypes.STRING, allowNull: false },
     content: { type: DataTypes.TEXT, allowNull: false },
+    imageUrl: { type: DataTypes.STRING, allowNull: true },
     status: {
       type: DataTypes.ENUM('pending', 'approved', 'rejected'),
       defaultValue: 'pending'
