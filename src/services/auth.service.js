@@ -7,11 +7,15 @@ const userService = require('./user.service');
 
 
 const loginWithUsernameAndPassword = async (username, password) => {
-  const user = await User.findOne({ where: { username } });
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    throw new ApiError(StatusCodes.UNAUTHORIZED, 'Tên đăng nhập hoặc mật khẩu không chính xác');
+  try {
+      const user = await User.findOne({ where: { username } });
+      if (!user || !(await bcrypt.compare(password, user.password))) {
+          throw new ApiError(StatusCodes.UNAUTHORIZED, 'Tên đăng nhập hoặc mật khẩu không chính xác');
+      }
+      return user;
+  } catch (error) {
+      throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'Server error during login process.');
   }
-  return user;
 };
 
 const changePassword = async(updateBody) => {
