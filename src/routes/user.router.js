@@ -45,7 +45,7 @@ router
 router
   .route('/update/:id')
   .put(
-    authorize('admin'), 
+    authorize('admin', 'employee'), 
     upload.single('avatar_url'), 
     validate(userValidation.updateUser), 
     userController.updateUser
