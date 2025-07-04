@@ -20,7 +20,11 @@ if (config.env === 'development') {
   app.use(morgan('dev'));
 }
 
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+);
 
 app.use(express.json());
 
@@ -28,11 +32,10 @@ app.use(express.urlencoded({ extended: true }));
 
 const allowedOrigins = [];
 if (config.env === 'development') {
-  allowedOrigins.push('http://localhost:3000'); // Cho phép local dev
+  allowedOrigins.push('http://localhost:3000');
 
 }
-if (config.corsOriginFe) { // corsOriginFe là biến bạn định nghĩa trong config.js, lấy từ process.env.CORS_ORIGIN_FE
-  // Cho phép nhiều origin nếu CORS_ORIGIN_FE chứa nhiều URL cách nhau bằng dấu phẩy
+if (config.corsOriginFe) { 
   config.corsOriginFe.split(',').forEach(origin => allowedOrigins.push(origin.trim()));
 }
 
@@ -51,6 +54,9 @@ const corsOptions = {
       optionsSuccessStatus: 200
   };
   app.use(cors(corsOptions));
+
+  const uploadsPath = path.resolve(__dirname, '..', 'uploads');
+  app.use('/uploads', express.static(uploadsPath));
 
   if (config.env === 'development') {
     app.use(morgan('dev'));

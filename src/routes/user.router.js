@@ -16,7 +16,7 @@ router
     userController.createUser
   )
   .get(
-    authorize('admin'),
+    authorize('admin','employee'),
     validate(userValidation.getUsers), 
     userController.getUserDashboard
   );

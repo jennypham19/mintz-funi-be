@@ -5,6 +5,7 @@ const { protect, authorize } = require('../middlewares/auth');
 const validate = require('../middlewares/validate');
 const  postValidation  = require('../validations/post.validation');
 const  postController  = require('../controllers/post.controller');
+const upload = require('../middlewares/upload');
 
 const router = express.Router();
 
@@ -13,10 +14,17 @@ router.get('/public', postController.getPublicPosts);
 
 router.use(protect);
 
+router.post(
+  '/upload-image', 
+  authorize('employee'), 
+  upload.single('image'),
+  postController.uploadPostImage 
+);
+
 router
   .route('/')
   .post(authorize('employee'), validate(postValidation.createPost), postController.createPost)
-  .get(authorize('admin', 'employee'), validate(postValidation.getPosts), postController.getPostsForDashboard);
+  .get(authorize('admin', 'employee'), validate(postValidation.getPosts), postController.getPosts);
 
 
 router.patch(
