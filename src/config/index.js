@@ -42,7 +42,7 @@ const appConfig = {
     accessExpirationMinutes: parseInt(process.env.JWT_ACCESS_EXPIRATION_MINUTES, 10),
     refreshExpirationDays: parseInt(process.env.JWT_REFRESH_EXPIRATION_DAYS, 10),
   },
-  corsOrigin: process.env.CORS_ORIGIN, // Đổi tên cho nhất quán
+  corsOriginFe: process.env.CORS_ORIGIN, 
   logLevel: process.env.LOG_LEVEL,
 };
 
