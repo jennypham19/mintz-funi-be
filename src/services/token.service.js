@@ -91,10 +91,26 @@ const refreshAuth = async (refreshToken) => {
   }
 };
 
+const blacklistRefreshToken = async (refreshToken) => {
+  const tokenDoc = await Token.findOne({
+    where: {
+      token: refreshToken,
+      type: tokenTypes.REFRESH 
+    }
+  });
+  if (!tokenDoc) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Refresh token not found');
+  }
+  tokenDoc.blacklisted = true;
+  await tokenDoc.save();
+  return tokenDoc; 
+}; 
+
 module.exports = {
   generateToken,
   saveToken,
   verifyToken,
   generateAuthTokens,
   refreshAuth,
+  blacklistRefreshToken
 };
