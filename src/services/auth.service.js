@@ -28,7 +28,12 @@ const changePassword = async(updateBody) => {
   return user;
 }
 
+const logout = async (refreshToken) => {
+    await tokenService.blacklistRefreshToken(refreshToken);
+};
+
 module.exports = {
   loginWithUsernameAndPassword,
-  changePassword
+  changePassword,
+  logout
 };

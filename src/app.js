@@ -4,6 +4,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const path = require('path');
 const { StatusCodes } = require('http-status-codes');
+const cookieParser = require('cookie-parser')
 
 const config = require('./config');
 const logger = require('./config/logger');
@@ -25,6 +26,8 @@ app.use(
     crossOriginResourcePolicy: { policy: "cross-origin" },
   })
 );
+
+app.use(cookieParser());
 
 app.use(express.json());
 
