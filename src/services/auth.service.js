@@ -12,8 +12,14 @@ const loginWithUsernameAndPassword = async (username, password) => {
       if (!user || !(await bcrypt.compare(password, user.password))) {
           throw new ApiError(StatusCodes.UNAUTHORIZED, 'Tên đăng nhập hoặc mật khẩu không chính xác');
       }
+      if(user.is_deleted === 1) {
+        throw new ApiError(StatusCodes.FORBIDDEN, 'Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên');
+      }
       return user;
   } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
       throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'Server error during login process.');
   }
 };
