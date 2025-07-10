@@ -78,6 +78,15 @@ const reviewPost = {
     .min(1),
 };
 
+const publishPost = {
+  params: Joi.object().keys({
+    id: Joi.number().required(),
+  }),
+  body: Joi.object().keys({
+    publish: Joi.boolean().required(),
+  }),
+};
+
 const deletePost = {
   params: Joi.object().keys({
     id: Joi.number().integer().required(),
@@ -90,5 +99,6 @@ module.exports = {
   getPost,
   updatePost,
   reviewPost,
+  publishPost,
   deletePost,
 };

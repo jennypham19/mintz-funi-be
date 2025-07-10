@@ -1,4 +1,4 @@
-const { User } = require('../models');
+const { User, Token } = require('../models');
 const bcrypt = require('bcryptjs');
 const { StatusCodes } = require('http-status-codes');
 const ApiError = require('../utils/ApiError');
@@ -24,7 +24,17 @@ const loginWithUsernameAndPassword = async (username, password) => {
   }
 };
 
-const changePassword = async(updateBody) => {
+const logout = async (refreshToken) => {
+  const refreshTokenDoc = await Token.findOne({ where: { token: refreshToken, type: 'refresh' } });
+
+  if (!refreshTokenDoc) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Refresh token không tồn tại');
+  }
+
+  await refreshTokenDoc.destroy();
+};
+
+const changePassword = async (updateBody) => {
   const user = await userService.getUserById(updateBody.user_id);
   if (updateBody.password) {
     updateBody.password = await bcrypt.hash(updateBody.password, 10);
@@ -34,9 +44,6 @@ const changePassword = async(updateBody) => {
   return user;
 }
 
-const logout = async (refreshToken) => {
-    await tokenService.blacklistRefreshToken(refreshToken);
-};
 
 module.exports = {
   loginWithUsernameAndPassword,

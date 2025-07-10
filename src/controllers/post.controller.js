@@ -21,7 +21,7 @@ const getPublicPosts = catchAsync(async (req, res) => {
   res.status(StatusCodes.OK).send({ success: true, data: posts });
 });
 
-const getPost = catchAsync(async (req, res) => {
+const getPostById = catchAsync(async (req, res) => {
   const post = await postService.getPostById(req.params.id);
   res.status(StatusCodes.OK).send({ success: true, data: post });
 });
@@ -49,13 +49,23 @@ const uploadPostImage = catchAsync(async (req, res) => {
   res.status(StatusCodes.OK).send({ success: true, message: 'Upload ảnh thành công', data: { imageUrl } });
 });
 
+const publishPost = catchAsync(async (req, res) => {
+  // `publishState` được gửi lên từ body, ví dụ: { publish: true }
+  const { publish } = req.body; 
+  const post = await postService.publishPostById(req.params.id, publish);
+  const message = publish ? 'Đăng tải bài viết thành công.' : 'Hủy đăng tải bài viết thành công.';
+  res.status(StatusCodes.OK).send({ success: true, message, data: post });
+});
+
+
 module.exports = {
   createPost,
   getPosts,
   getPublicPosts,
-  getPost,
+  getPostById,
   updatePost,
   reviewPost,
   deletePost,
   uploadPostImage,
+  publishPost,
 };

@@ -2,9 +2,10 @@
 const express = require('express');
 
 const { protect, authorize } = require('../middlewares/auth');
+const auth = require('../middlewares/auth');
 const validate = require('../middlewares/validate');
-const  postValidation  = require('../validations/post.validation');
-const  postController  = require('../controllers/post.controller');
+const postValidation = require('../validations/post.validation');
+const postController = require('../controllers/post.controller');
 const upload = require('../middlewares/upload');
 
 const router = express.Router();
@@ -15,10 +16,10 @@ router.get('/public', postController.getPublicPosts);
 router.use(protect);
 
 router.post(
-  '/upload-image', 
-  authorize('employee'), 
+  '/upload-image',
+  authorize('employee'),
   upload.single('image'),
-  postController.uploadPostImage 
+  postController.uploadPostImage
 );
 
 router
@@ -36,8 +37,12 @@ router.patch(
 
 router
   .route('/:id')
-  .get(authorize('admin', 'employee'), validate(postValidation.getPost), postController.getPost)
+  .get(authorize('admin', 'employee'), validate(postValidation.getPost), postController.getPostById)
   .patch(authorize('employee'), validate(postValidation.updatePost), postController.updatePost)
   .delete(authorize('admin', 'employee'), validate(postValidation.deletePost), postController.deletePost);
+
+router
+  .route('/:id/publish')
+  .patch(authorize('employee'), validate(postValidation.publishPost), postController.publishPost);
 
 module.exports = router;

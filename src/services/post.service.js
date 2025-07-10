@@ -13,8 +13,6 @@ const createPost = async (postBody, authorId) => {
     content,
     imageUrl,
     category, 
-    time,
-    authorName,
     authorId,
     status: 'pending',
   });
@@ -124,10 +122,40 @@ const deletePostById = async (postId, currentUser) => {
   return post;
 };
 
+const publishPostById = async (postId, publishState) => {
+  const post = await getPostById(postId);
+
+  // Chỉ có thể đăng tải bài viết đã được duyệt
+  if (post.status !== 'approved') {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Chỉ có thể đăng tải các bài viết đã được duyệt.');
+  }
+
+  post.isPublished = publishState;
+  await post.save();
+  return post;
+};
+
+const getPublishedPosts = async () => {
+  const posts = await Post.findAll({
+    where: { 
+      status: 'approved',
+      isPublished: true, // Chỉ lấy các bài đã được đăng tải
+    },
+    order: [['createdAt', 'DESC']],
+    include: { // Thêm thông tin tác giả cho landing page
+        model: User,
+        as: 'author',
+        attributes: ['id', 'fullName', 'avatarUrl'],
+    }
+  });
+  return posts;
+};
+
 module.exports = {
   createPost,
   queryPosts,
-  getApprovedPosts,
+  getApprovedPosts: getPublishedPosts,
+  publishPostById,
   getPostById,
   updatePostById,
   reviewPostById,
