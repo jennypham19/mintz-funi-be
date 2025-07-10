@@ -135,20 +135,35 @@ const publishPostById = async (postId, publishState) => {
   return post;
 };
 
-const getPublishedPosts = async () => {
-  const posts = await Post.findAll({
-    where: { 
-      status: 'approved',
-      isPublished: true, // Chỉ lấy các bài đã được đăng tải
-    },
+const getPublishedPosts = async (queryOptions) => {
+  const { page, limit, category } = queryOptions;
+  const offset = page * limit;
+  const whereConditions = {
+    status: 'approved',
+    isPublished: true, // Chỉ lấy các bài đã được đăng tải
+  };
+  if (category !== undefined && category !== 'Tất cả') {
+    whereConditions.category = category;
+  }
+  const {count, rows: posts} = await Post.findAndCountAll({
+    where: whereConditions,
     order: [['createdAt', 'DESC']],
     include: { // Thêm thông tin tác giả cho landing page
         model: User,
         as: 'author',
-        attributes: ['id', 'fullName', 'avatarUrl'],
-    }
+        attributes: ['id', 'fullName', 'avatar_url'],
+    },
+    limit,
+    offset
   });
-  return posts;
+  const totalPages = Math.ceil(count/limit);
+  return {
+    totalCount: count,
+    totalPages,
+    currentPage: page,
+    pageSize: limit,
+    posts,
+  }
 };
 
 module.exports = {
