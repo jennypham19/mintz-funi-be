@@ -17,7 +17,8 @@ const getPosts = catchAsync(async (req, res) => {
 });
 
 const getPublicPosts = catchAsync(async (req, res) => {
-  const posts = await postService.getApprovedPosts();
+  const queryOptions = pick(req.query, ['page', 'limit', 'category']);
+  const posts = await postService.getApprovedPosts(queryOptions);
   res.status(StatusCodes.OK).send({ success: true, data: posts });
 });
 
