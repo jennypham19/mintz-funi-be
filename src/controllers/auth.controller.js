@@ -26,7 +26,7 @@ const login = catchAsync(async (req, res) => {
     data: {
       user,
       accessToken: tokens.accessToken.token,
-      refreshToken: tokens.refreshToken.token, // Vẫn gửi về để client có thể linh hoạt sử dụng (tùy chọn)
+      refreshToken: tokens.refreshToken.token,
     },
   });
 });
@@ -37,7 +37,7 @@ const logout = catchAsync(async (req, res) => {
     await authService.logout(refreshToken);
   }
   res.clearCookie('refreshToken');
-  res.status(StatusCodes.NO_CONTENT).send(); // 204 No Content là response chuẩn cho việc đăng xuất thành công
+  res.status(StatusCodes.NO_CONTENT).send();
 });
 
 const refreshToken = catchAsync(async (req, res) => {

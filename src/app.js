@@ -1,6 +1,7 @@
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
+const cookieParser = require('cookie-parser'); 
 const morgan = require('morgan');
 const path = require('path');
 const { StatusCodes } = require('http-status-codes');
@@ -32,6 +33,8 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
+
+app.use(cookieParser());
 
 const allowedOrigins = [];
 if (config.env === 'development') {
