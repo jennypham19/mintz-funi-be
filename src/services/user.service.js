@@ -126,6 +126,13 @@ const deleteUserById = async (userId, updateBody) => {
   return user;
 };
 
+const activeUserById = async (userId, updateBody) => {
+  const user = await getUserById(userId);
+  Object.assign(user, updateBody);
+  await user.save();
+  return user;
+};
+
 const resetUser = async(useId) => {
   const user = await getUserById(useId);
   // Tự sinh password ngẫu nhiên dài 8 ký tự
@@ -190,5 +197,6 @@ module.exports = {
   updateUserById,
   deleteUserById,
   queryUsers,
-  resetUser
+  resetUser,
+  activeUserById
 };

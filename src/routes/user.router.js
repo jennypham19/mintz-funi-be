@@ -67,4 +67,12 @@ router
     userController.deleteUser
 );
 
+router
+  .route('/active/:id')
+  .patch(
+    authorize('admin'), 
+    validate(userValidation.deleteUser), 
+    userController.activeUser
+);
+
 module.exports = router;
