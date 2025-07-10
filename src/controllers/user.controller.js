@@ -49,6 +49,11 @@ const deleteUser = catchAsync(async (req, res) => {
     res.status(StatusCodes.OK).send({success: true, message: 'Xóa tài khoản thành công'});
 });
 
+const activeUser = catchAsync(async (req, res) => {
+    await userService.activeUserById(req.params.id, req.body);
+    res.status(StatusCodes.OK).send({success: true, message: 'Kích hoạt tài khoản thành công'});
+});
+
 
 module.exports = {
   createUser,
@@ -57,5 +62,6 @@ module.exports = {
   updateUser,
   deleteUser,
   getUsers, 
-  resetUser
+  resetUser,
+  activeUser
 };
