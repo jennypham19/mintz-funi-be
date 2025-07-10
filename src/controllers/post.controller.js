@@ -50,11 +50,16 @@ const uploadPostImage = catchAsync(async (req, res) => {
 });
 
 const publishPost = catchAsync(async (req, res) => {
-  // `publishState` được gửi lên từ body, ví dụ: { publish: true }
   const { publish } = req.body; 
   const post = await postService.publishPostById(req.params.id, publish);
   const message = publish ? 'Đăng tải bài viết thành công.' : 'Hủy đăng tải bài viết thành công.';
   res.status(StatusCodes.OK).send({ success: true, message, data: post });
+});
+
+const getPublicPostsLandingPage = catchAsync(async (req, res) => {
+  // Đảm bảo nó gọi đúng hàm service
+  const posts = await postService.getPublishedPosts(); 
+  res.status(StatusCodes.OK).send({ success: true, data: posts });
 });
 
 
@@ -68,4 +73,5 @@ module.exports = {
   deletePost,
   uploadPostImage,
   publishPost,
+  getPublicPostsLandingPage
 };
