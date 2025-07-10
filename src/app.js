@@ -5,7 +5,6 @@ const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 const path = require('path');
 const { StatusCodes } = require('http-status-codes');
-const cookieParser = require('cookie-parser')
 
 const config = require('./config');
 const logger = require('./config/logger');
