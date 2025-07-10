@@ -45,4 +45,6 @@ router
   .route('/:id/publish')
   .patch(authorize('employee'), validate(postValidation.publishPost), postController.publishPost);
 
+router.get('/public', postController.getPublicPostsLandingPage);
+
 module.exports = router;
