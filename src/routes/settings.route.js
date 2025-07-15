@@ -21,6 +21,12 @@ router
         validate(settingsValidation.getServices),
         settingsController.getServices
     )
+router
+    .route('/design-and-builds')
+    .get(
+        validate(settingsValidation.getDesignAndBuilds),
+        settingsController.getDesignAndBuilds
+    )
 
 // Các route dưới đây yêu cầu đăng nhập và có vai trò
 router.use(protect, authorize('admin'));
@@ -65,7 +71,7 @@ router
     .route('/delete-service/:id')
     .delete(
         validate(settingsValidation.getService),
-        settingsController.deleteSevice
+        settingsController.deleteService
     )
 
 // Lấy chi tiết dịch vụ
@@ -73,7 +79,40 @@ router
     .route('/service/:id')
     .get(
         validate(settingsValidation.getService),
-        settingsController.getSevice
+        settingsController.getService
     )
-    
+
+// Lưu quy trình thiết kế và thi công
+router
+    .route('/create-design-and-build')
+    .post(
+        upload.single('image_url'),
+        validate(settingsValidation.bodyDesignAndBuild),
+        settingsController.createDesignAndBuild
+    )
+
+// Lấy chi tiết thiết kế & thi công
+router
+    .route('/design-and-build/:id')
+    .get(
+        validate(settingsValidation.getDesignAndBuild),
+        settingsController.getDesignAndBuild
+    )
+
+//Cập nhật thiết kế & thi công
+router
+    .route('/update-design-and-build/:id')
+    .put(
+        upload.single('image_url'),
+        validate(settingsValidation.updateDesignAndBuild),
+        settingsController.updateDesignAndBuild
+    )
+
+// Xóa thiết kế & thi công
+router
+    .route('/delete-design-and-build/:id')
+    .delete(
+        validate(settingsValidation.getDesignAndBuild),
+        settingsController.deleteDesignAndBuild
+    )
 module.exports = router;
