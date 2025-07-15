@@ -1,7 +1,7 @@
 const ApiError = require('../utils/ApiError');
 const { StatusCodes } = require('http-status-codes');
 const uploadService = require('./upload-image.service');
-const { ImageSlide, Op, Service } = require('../models');
+const { ImageSlide, Op, Service, DesignAndBuild } = require('../models');
 const path = require('path');
 const fs = require('fs');
 
@@ -14,13 +14,22 @@ const getImageSlidesById = async(id) => {
 }
 
 const getServiceById = async(id) => {
-    const serive = await Service.findByPk(id);
-    if(!serive){
+    const service = await Service.findByPk(id);
+    if(!service){
         throw new ApiError(StatusCodes.NOT_FOUND,  "Không tìm thấy dịch vụ");
     }
-    return serive;
+    return service;
 }
 
+const getDesignAndBuildById = async(id) => {
+    const designAndBuild = await DesignAndBuild.findByPk(id);
+    if(!designAndBuild){
+        throw new ApiError(StatusCodes.NOT_FOUND,  "Không tìm thấy bản ghi");
+    }
+    return designAndBuild;
+}
+
+//slide
 const uploadImageSlide = async(slideBody, file) => {
     try {
         if(file){
@@ -90,6 +99,7 @@ const deleteImageSlide = async(id) => {
     }
 }
 
+//services
 const createImageServices = async(serviceBody, file) => {
     try {
         if(file){
@@ -178,6 +188,97 @@ const deleteService = async(id) => {
     }
 }
 
+// design & build
+const createImageDesignAndBuild = async(designAndBuildBody, file) => {
+    try {
+        if(file){
+            const fileSize = file.size;
+            const maxSize = 10 * 1024 * 1024;
+            if(fileSize > maxSize){
+                throw new ApiError(StatusCodes.BAD_REQUEST, "Image size exceed 10MB limit")
+            }
+            const urlService = await uploadService.uploadImageDesignAndBuild(file);
+            designAndBuildBody.image_url = urlService;
+            const designAndBuild = await DesignAndBuild.create(designAndBuildBody);
+            return designAndBuild;
+        }
+    } catch (error) {
+        throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, "Lưu thất bại " + error.message);
+    }
+}
+
+const updateDesignAndBuild = async(id, designAndBuildBody, file) => {
+    try {
+        const designAndBuild = await getDesignAndBuildById(id)
+        if(file){
+            const fileSize = file.size;
+            const maxSize = 10 * 1024 * 1024;
+            if(fileSize > maxSize){
+                throw new ApiError(StatusCodes.BAD_REQUEST, "Image size exceed 10MB limit")
+            }
+            const urlDesignAndBuild = await uploadService.uploadImageDesignAndBuild(file);
+            designAndBuildBody.image_url = urlDesignAndBuild;
+            await designAndBuild.update(designAndBuildBody);
+        }else{
+            await designAndBuild.update(designAndBuildBody);
+        }
+        return designAndBuild
+    } catch (error) {
+        throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, "Cập nhật bản ghi thất bại " + error.message);
+    }
+}
+
+const getDesignAndBuilds = async(queryOptions) => {
+    try {
+        const { page, size, searchTerm} = queryOptions;
+        const offset = page * size;
+        const whereClause = {};
+        if(searchTerm){
+            whereClause[Op.or] = [
+                { title: { [Op.iLike]: `%${searchTerm}%`}},
+                { content: { [Op.iLike]: `%${searchTerm}%`}},
+            ]
+        }
+        const { count, rows: designAndBuilds} = await DesignAndBuild.findAndCountAll({
+            where: whereClause,
+            limit: size,
+            offset,
+            order: [[ 'id', 'ASC']]
+        });
+        const totalPages = Math.ceil(count/size);
+        return {
+            designAndBuilds,
+            totalPages,
+            currentPage: page,
+            totalDesignAndBuilds: count,
+        }
+    } catch (error) {
+        throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, "Lấy danh sách thất bại " + error.message)
+    }
+}
+
+const deleteDesignAndBuild = async(id) => {
+    try {
+        // 1. Tìm dịch vụ trong DB
+        const designAndBuild = await getDesignAndBuildById(id);
+
+        // 2. Xóa file vật lý
+        const filePath = path.join(process.cwd(), designAndBuild.image_url.slice(1));
+        
+        fs.unlink(filePath, (err) => {
+            if (err && err.code !== 'ENOENT') {
+                console.error('Error deleting file:', err);
+            }
+        });
+
+        //3. Xóa record trong DB
+        await designAndBuild.destroy()
+    } catch (error) {
+        throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'Xóa bản ghi thất bại ' + error.message)
+    }
+}
+
+
 module.exports = {
     uploadImageSlide,
     getImageSlides,
@@ -187,5 +288,10 @@ module.exports = {
     getServiceById,
     getServices,
     deleteService,
-    updateService
+    updateService,
+    getDesignAndBuildById,
+    createImageDesignAndBuild,
+    getDesignAndBuilds,
+    updateDesignAndBuild,
+    deleteDesignAndBuild
 }
