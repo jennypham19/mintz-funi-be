@@ -49,14 +49,16 @@ const getPost = {
 
 const updatePost = {
   params: Joi.object().keys({
-    id: Joi.number().integer().required(),
+    id: Joi.number().required(),    
   }),
-  body: Joi.object()
-    .keys({
-      title: Joi.string(),
-      content: Joi.string(),
-    })
-    .min(1), // Phải có ít nhất 1 trường để cập nhật
+  body: Joi.object().keys({
+    title: Joi.string(),
+    content: Joi.string(),
+    category: Joi.string(),
+    time: Joi.date().iso(), 
+    authorName: Joi.string().allow(''),
+    imageUrl: Joi.string().allow(null, ''),
+  }),
 };
 
 const reviewPost = {
