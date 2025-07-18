@@ -95,6 +95,12 @@ const deletePost = {
   }),
 };
 
+const getAdminAndTotal = {
+  query: Joi.object().keys({
+    authorId: Joi.number().integer(),
+  }),
+};
+
 module.exports = {
   createPost,
   getPosts,
@@ -103,4 +109,5 @@ module.exports = {
   reviewPost,
   publishPost,
   deletePost,
+  getAdminAndTotal
 };
