@@ -11,7 +11,7 @@ const upload = require('../middlewares/upload');
 const router = express.Router();
 
 router.get('/public', postController.getPublicPosts);
-
+router.get('/admin-total-post', validate(postValidation.getAdminAndTotal), postController.getAdminAndTotalPost);
 
 router.use(protect);
 
