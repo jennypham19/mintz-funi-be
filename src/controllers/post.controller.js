@@ -63,6 +63,11 @@ const getPublicPostsLandingPage = catchAsync(async (req, res) => {
   res.status(StatusCodes.OK).send({ success: true, data: posts });
 });
 
+const getAdminAndTotalPost = catchAsync(async (req, res) => {
+  const queryOptions = pick(req.query, ['authorId']);
+  const data = await postService.getManagerAndTotalPost(queryOptions);
+  res.status(StatusCodes.OK).send({ success: true, message: 'Lấy bản ghi thành công', data: data})
+})
 
 module.exports = {
   createPost,
@@ -74,5 +79,6 @@ module.exports = {
   deletePost,
   uploadPostImage,
   publishPost,
-  getPublicPostsLandingPage
+  getPublicPostsLandingPage,
+  getAdminAndTotalPost
 };

@@ -137,6 +137,7 @@ const publishPostById = async (postId, publishState) => {
 
 const getPublishedPosts = async (queryOptions) => {
   const { page, limit, category } = queryOptions;
+
   const offset = page * limit;
   const whereConditions = {
     status: 'approved',
@@ -166,6 +167,26 @@ const getPublishedPosts = async (queryOptions) => {
   }
 };
 
+const getManagerAndTotalPost = async (queryOptions) => {
+  try {
+    const { authorId } = queryOptions;
+    const whereConditions = {};
+    if (authorId) {
+      whereConditions.authorId = authorId;
+    }
+    const adminUser = await User.findOne({where: { role: 'admin' }});
+    const totalPostPending = await Post.count({ where: { ...whereConditions, status: 'pending' }});
+    const totalPostApproved = await Post.count({ where: { ...whereConditions, status: 'approved' }});
+    return {
+      admin: adminUser,
+      totalPostApproved: totalPostApproved,
+      totalPostPending: totalPostPending
+    }
+  } catch (error) {
+    throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, "Lấy bản ghi thất bại " + error.message)
+  }
+}
+
 module.exports = {
   createPost,
   queryPosts,
@@ -175,4 +196,5 @@ module.exports = {
   updatePostById,
   reviewPostById,
   deletePostById,
+  getManagerAndTotalPost
 };
