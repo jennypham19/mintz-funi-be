@@ -1,5 +1,4 @@
 // src/services/contact.service.js
-
 const { Contact, Op } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { StatusCodes } = require('http-status-codes');
