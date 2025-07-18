@@ -4,6 +4,10 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
       User.hasMany(models.Post, { foreignKey: 'authorId', as: 'posts' });
+      User.hasMany(models.UserRole, {
+        foreignKey: 'user_id',
+        as:'users'
+      })
     }
   }
   User.init({
