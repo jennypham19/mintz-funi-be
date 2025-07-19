@@ -167,18 +167,16 @@ const getPublishedPosts = async (queryOptions) => {
   }
 };
 
-const getManagerAndTotalPost = async (queryOptions) => {
+const getTotalPosts = async (queryOptions) => {
   try {
     const { authorId } = queryOptions;
     const whereConditions = {};
     if (authorId) {
       whereConditions.authorId = authorId;
     }
-    const adminUser = await User.findOne({where: { role: 'admin' }});
     const totalPostPending = await Post.count({ where: { ...whereConditions, status: 'pending' }});
     const totalPostApproved = await Post.count({ where: { ...whereConditions, status: 'approved' }});
     return {
-      admin: adminUser,
       totalPostApproved: totalPostApproved,
       totalPostPending: totalPostPending
     }
@@ -196,5 +194,5 @@ module.exports = {
   updatePostById,
   reviewPostById,
   deletePostById,
-  getManagerAndTotalPost
+  getTotalPosts
 };

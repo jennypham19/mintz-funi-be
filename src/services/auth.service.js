@@ -1,4 +1,4 @@
-const { User, Token } = require('../models');
+const { User, Token, RoleGroup, UserRole, RoleGroupMenu, RoleGroupAction, Menu, Action } = require('../models');
 const bcrypt = require('bcryptjs');
 const { StatusCodes } = require('http-status-codes');
 const ApiError = require('../utils/ApiError');
@@ -15,12 +15,81 @@ const loginWithUsernameAndPassword = async (username, password) => {
       if(user.is_deleted === 1) {
         throw new ApiError(StatusCodes.FORBIDDEN, 'Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên');
       }
-      return user;
+
+      if (user.role === 'admin') {
+        return user
+      }else{
+        const roleGroup = await RoleGroup.findOne({
+          include: [
+            {
+              model: UserRole,
+              as: 'roleUser',
+              where: {
+                user_id: user.id
+                }
+            },
+            {
+              model:  RoleGroupMenu,
+              as: 'roleGroupMenu',
+              include: [
+                { model: Menu, as: 'menu'}
+              ]
+            },
+            {
+              model: RoleGroupAction,
+              as: 'roleGroupAction',
+              include: [
+                { model: Action, as: 'action'}
+              ]
+            }
+          ],
+          order: [
+            ['roleGroupMenu', 'id', 'ASC']
+          ]
+        });
+
+        if (!roleGroup) {
+          throw new ApiError(StatusCodes.FORBIDDEN, `Tài khoản ${user.username} chưa được gán quyền. Vui lòng liên hệ quản trị viên để được gán quyền`);
+        }
+
+        const roleGroupFormatted = {
+              id: roleGroup.id,
+              name: roleGroup.name,
+              permission: roleGroup.roleGroupMenu.map((rgm) => {
+                  const menu = rgm.menu;
+                  return{
+                      id: menu.id,
+                      code: menu.code,
+                      name: menu.name,
+                      path: menu.path,
+                      icon: menu.icon,
+                      actions: (roleGroup.roleGroupAction ?? [])
+                          .filter((rga) => rga.action.menu_id === menu.id)
+                          .map((rga) => {
+                              const action = rga.action;
+                              return{
+                                  id: action.id,
+                                  code: action.code,
+                                  name: action.name,
+                                  path: action.path
+                              }
+                          })
+                  }
+              })
+        }
+        const userFormatted = {
+          ...user.toJSON(),
+          permission: roleGroupFormatted
+        }
+        return userFormatted;        
+      }
+
+
   } catch (error) {
       if (error instanceof ApiError) {
         throw error;
       }
-      throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'Server error during login process.');
+      throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'Server error during login process.' + error.message);
   }
 };
 
