@@ -71,11 +71,11 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/api', apiRoutes);
 
-app.use('/api/uploads', express.static(path.join(__dirname, '..', 'uploads'),{
-  setHeaders: (res, path) => {
-    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-  }
-}));
+// app.use('/api/uploads', express.static(path.join(__dirname, '..', 'uploads'),{
+//   setHeaders: (res, path) => {
+//     res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+//   }
+// }));
 
 app.use((req, res, next) => {
   next(new ApiError(StatusCodes.NOT_FOUND, 'API Route Not Found'));
