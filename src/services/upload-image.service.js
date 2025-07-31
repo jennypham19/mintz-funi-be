@@ -31,7 +31,7 @@ const uploadImageSlide = async(file) => {
         throw new ApiError(StatusCodes.ACCEPTED, "Only PNG, JPG or JPEG images accepted")
     }
 
-    const fileName = `image_slide_${Math.floor(Math.random() * 6)}_${file.originalname}`;
+    const fileName = `image_slide_${Math.floor(Math.random() * 6)}.${file.originalname.split('.')[1]}`;
     const savePath = path.join(PATH_DIR_SLIDE, fileName);
     await fs.mkdir(PATH_DIR_SLIDE, { recursive: true});
     await fs.writeFile(savePath, file.buffer);
@@ -45,7 +45,7 @@ const uploadImageServices = async(file) => {
         throw new ApiError(StatusCodes.ACCEPTED, "Only PNG, JPG or JPEG images accepted")
     }
 
-    const fileName = `image_services_${Math.floor(Math.random() * 6)}_${file.originalname}`;
+    const fileName = `image_services_${Math.floor(Math.random() * 6)}.${file.originalname.split('.')[1]}`;
     const savePath = path.join(PATH_DIR_SERVICES, fileName);
     await fs.mkdir(PATH_DIR_SERVICES, { recursive: true});
     await fs.writeFile(savePath, file.buffer);
@@ -59,7 +59,7 @@ const uploadImageDesignAndBuild = async(file) => {
         throw new ApiError(StatusCodes.ACCEPTED, "Only PNG, JPG or JPEG images accepted")
     }
 
-    const fileName = `image_design_build_${Math.floor(Math.random() * 6)}_${file.originalname}`;
+    const fileName = `image_design_build_${Math.floor(Math.random() * 6)}.${file.originalname.split('.')[1]}`;
     const savePath = path.join(PATH_DIR_DESIGN_BUILD, fileName);
     await fs.mkdir(PATH_DIR_DESIGN_BUILD, { recursive: true});
     await fs.writeFile(savePath, file.buffer);
