@@ -39,11 +39,11 @@ const allowedOrigins = [];
 if (config.env === 'development') {
   allowedOrigins.push('http://localhost:3000');
 }
-console.log("allowedOrigins: ",allowedOrigins);
 
 if (config.corsOriginFe) { 
   config.corsOriginFe.split(',').forEach(origin => allowedOrigins.push(origin.trim()));
 }
+console.log("allowedOrigins: ",allowedOrigins);
 
 const corsOptions = {
     origin: function (origin, callback) {
@@ -59,6 +59,9 @@ const corsOptions = {
       credentials: true,
       optionsSuccessStatus: 200
   };
+
+console.log("corsOptions: ",corsOptions);
+
   app.use(cors(corsOptions));
 
   const uploadsPath = path.resolve(__dirname, '..', 'uploads');
