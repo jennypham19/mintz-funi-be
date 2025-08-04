@@ -13,8 +13,12 @@ const login = catchAsync(async (req, res) => {
   // Gửi refreshToken qua cookie httpOnly để tăng cường bảo mật
   res.cookie('refreshToken', tokens.refreshToken.token, {
     httpOnly: true,
-    secure: config.env === 'production',
-    sameSite: config.env === 'production' ? 'None' : 'Lax',
+    secure: true, // Chỉ bật secure nếu đang chạy trên môi trường production
+    // secure: config.env === 'production',
+    sameSite: 'None', // Chỉ sử dụng 'None' nếu cần hỗ trợ cross-site requests
+    // Đặt sameSite là 'None' nếu bạn cần hỗ trợ cross-site requests, ví dụ như khi frontend và backend chạy trên các domain khác nhau
+    // Nếu không cần hỗ trợ cross-site requests, có thể để là "Lax" hoặc "Strict"
+    // sameSite: config.env === 'production' ? 'None' : 'Lax',
     maxAge: config.jwt.refreshExpirationDays * 24 * 60 * 60 * 1000, // maxAge tính bằng mili giây
   });
 
