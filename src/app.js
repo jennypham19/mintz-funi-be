@@ -61,7 +61,7 @@ const corsOptions = {
   app.use(cors(corsOptions));
 
   const uploadsPath = path.resolve(__dirname, '..', 'uploads');
-  app.use('api/uploads', express.static(uploadsPath));
+  app.use('uploads', express.static(uploadsPath));
 
   if (config.env === 'development') {
     app.use(morgan('dev'));
@@ -71,11 +71,11 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/api', apiRoutes);
 
-// app.use('/api/uploads', express.static(path.join(__dirname, '..', 'uploads'),{
-//   setHeaders: (res, path) => {
-//     res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-//   }
-// }));
+app.use('/api/uploads', express.static(path.join(__dirname, '..', 'uploads'),{
+  setHeaders: (res, path) => {
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  }
+}));
 
 app.use((req, res, next) => {
   next(new ApiError(StatusCodes.NOT_FOUND, 'API Route Not Found'));
