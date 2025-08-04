@@ -3,6 +3,7 @@ const catchAsync = require('../utils/catchAsync');
 const authService = require('../services/auth.service');
 const tokenService = require('../services/token.service');
 const config = require('../config');
+const ApiError = require('../utils/ApiError');
 
 const login = catchAsync(async (req, res) => {
   const { username, password } = req.body;
