@@ -99,7 +99,8 @@ const logout = async (refreshToken) => {
   if (!refreshTokenDoc) {
     throw new ApiError(StatusCodes.NOT_FOUND, 'Refresh token không tồn tại');
   }
-  await tokenService.blacklistRefreshToken(refreshToken)
+  await refreshTokenDoc.destroy();
+  // await tokenService.blacklistRefreshToken(refreshToken)
 };
 
 const changePassword = async (updateBody) => {
