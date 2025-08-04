@@ -44,9 +44,9 @@ const logout = catchAsync(async (req, res) => {
 
 const refreshToken = catchAsync(async (req, res) => {
   const oldRefreshToken = req.cookies.refreshToken;
-  // if (!oldRefreshToken) {
-  //   throw new ApiError(StatusCodes.UNAUTHORIZED, 'Không tìm thấy refresh token');
-  // }
+  if (!oldRefreshToken) {
+    throw new ApiError(StatusCodes.UNAUTHORIZED, 'Không tìm thấy refresh token');
+  }
 
   const newTokens = await tokenService.refreshAuth(oldRefreshToken);
 
