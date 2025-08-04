@@ -1,5 +1,6 @@
 // src/config/index.js
 
+const { log } = require('console');
 const dotenv = require('dotenv');
 const path = require('path');
 
