@@ -35,12 +35,15 @@ const verifyToken = async (token, type) => {
   
   try {
     const payload = jwt.verify(token, secret);
+      console.log('✅ Token payload:', payload);
+
     
     const tokenDoc = await Token.findOne({
       where: { token, type, userId: payload.sub, blacklisted: false },
     });
 
     if (!tokenDoc) {
+      console.error('❌ JWT verify failed:', error);
       throw new Error('Token not found in DB');
     }
     return tokenDoc;
@@ -82,10 +85,13 @@ const refreshAuth = async (refreshToken) => {
     if (!user) {
       throw new Error('User not found');
     }
+    // Tạo cặp token mới
+    const newTokens =  await generateAuthTokens(user);
     // Xóa refresh token cũ đi để đảm bảo mỗi refresh token chỉ được dùng một lần (tăng bảo mật)
     await refreshTokenDoc.destroy();
-    // Tạo cặp token mới
-    return await generateAuthTokens(user);
+
+    return newTokens
+
   } catch (error) {
     // Nếu verifyToken hoặc bất cứ thứ gì khác thất bại
     throw new ApiError(StatusCodes.UNAUTHORIZED, 'Please authenticate');
