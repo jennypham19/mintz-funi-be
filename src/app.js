@@ -61,7 +61,7 @@ const corsOptions = {
   app.use(cors(corsOptions));
 
   const uploadsPath = path.resolve(__dirname, '..', 'uploads');
-  app.use('/uploads', express.static(uploadsPath));
+  app.use('api/uploads', express.static(uploadsPath));
 
   if (config.env === 'development') {
     app.use(morgan('dev'));
