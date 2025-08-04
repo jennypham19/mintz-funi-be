@@ -38,8 +38,9 @@ app.use(cookieParser());
 const allowedOrigins = [];
 if (config.env === 'development') {
   allowedOrigins.push('http://localhost:3000');
-
 }
+console.log("allowedOrigins: ",allowedOrigins);
+
 if (config.corsOriginFe) { 
   config.corsOriginFe.split(',').forEach(origin => allowedOrigins.push(origin.trim()));
 }
@@ -54,7 +55,7 @@ const corsOptions = {
       }
     },
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization', 'timezone'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'timezone', 'Accept', 'X-Requested-With'],
       credentials: true,
       optionsSuccessStatus: 200
   };
