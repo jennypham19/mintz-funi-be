@@ -51,6 +51,8 @@ const verifyToken = async (token, type) => {
 };
 
 const generateAuthTokens = async (user) => {
+  console.log("config: ", config);
+  
   const accessTokenExpiresIn = `${config.jwt.accessExpirationMinutes}m`;
   const refreshTokenExpiresIn = `${config.jwt.refreshExpirationDays}d`;
   
