@@ -45,11 +45,11 @@ const uploadImageServices = async(file) => {
         throw new ApiError(StatusCodes.ACCEPTED, "Only PNG, JPG or JPEG images accepted")
     }
 
-    const fileName = `image_services_${Math.floor(Math.random() * 6)}.${file.originalname.split('.')[1]}`;
+    // const fileName = `image_services_${Math.floor(Math.random() * 6)}.${file.originalname.split('.')[1]}`;
     const savePath = path.join(PATH_DIR_SERVICES, fileName);
     await fs.mkdir(PATH_DIR_SERVICES, { recursive: true});
     await fs.writeFile(savePath, file.buffer);
-    return `/uploads/services/${fileName}`;
+    return `/uploads/services/${file.originalname}`;
 }
 
 const uploadImageDesignAndBuild = async(file) => {
