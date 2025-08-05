@@ -25,6 +25,7 @@ const createUserService = async (userBody, file) => {
       const avatarUrl = await uploadService.uploadAvatar(file);
       userBody.avatar_url = avatarUrl;
   }
+  console.log('[createUserService] Nhận password:', userBody.password);
   // Tự sinh password ngẫu nhiên dài 8 ký tự
   // const plainPassword = crypto.randomBytes(6).toString('base64').slice(0,6);
   // Hash bằng bcrypt
