@@ -56,7 +56,7 @@ const corsOptions = {
     },
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization', 'timezone', 'Accept', 'X-Requested-With'],
-      credentials: true,
+      credentials: true, // Cho phép gửi cookie từ client
       optionsSuccessStatus: 200
   };
 
