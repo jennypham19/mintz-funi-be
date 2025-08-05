@@ -9,6 +9,8 @@ const login = catchAsync(async (req, res) => {
   const { username, password } = req.body;
   const user = await authService.loginWithUsernameAndPassword(username, password);
   const tokens = await tokenService.generateAuthTokens(user);
+  console.log("Generated tokens: ", tokens);
+  
 
   // Gửi refreshToken qua cookie httpOnly để tăng cường bảo mật
   res.cookie('refreshToken', tokens.refreshToken.token, {
