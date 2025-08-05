@@ -46,7 +46,7 @@ const uploadImageServices = async(file) => {
     }
 
     // const fileName = `image_services_${Math.floor(Math.random() * 6)}.${file.originalname.split('.')[1]}`;
-    const savePath = path.join(PATH_DIR_SERVICES, fileName);
+    const savePath = path.join(PATH_DIR_SERVICES, file.originalname);
     await fs.mkdir(PATH_DIR_SERVICES, { recursive: true});
     await fs.writeFile(savePath, file.buffer);
     return `/uploads/services/${file.originalname}`;
