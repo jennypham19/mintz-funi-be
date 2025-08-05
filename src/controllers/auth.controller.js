@@ -14,6 +14,7 @@ const login = catchAsync(async (req, res) => {
   res.cookie('refreshToken', tokens.refreshToken.token, {
     httpOnly: true,
     secure: config.env === 'production',
+    sameSite: 'None',
     maxAge: config.jwt.refreshExpirationDays * 24 * 60 * 60 * 1000, // maxAge tính bằng mili giây
   });
 
