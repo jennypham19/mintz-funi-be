@@ -85,12 +85,11 @@ const refreshAuth = async (refreshToken) => {
     if (!user) {
       throw new Error('User not found');
     }
+    // Xóa refresh token cũ đi để đảm bảo mỗi refresh token chỉ được dùng một lần (tăng bảo mật)
+    await refreshTokenDoc.destroy();
+
     // Tạo cặp token mới
     const newTokens =  await generateAuthTokens(user);
-    // Xóa refresh token cũ đi để đảm bảo mỗi refresh token chỉ được dùng một lần (tăng bảo mật)
-    refreshTokenDoc.blacklisted = true;
-    await refreshTokenDoc.save();
-
     // Trả về cặp token mới
     return newTokens
 
