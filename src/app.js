@@ -38,12 +38,11 @@ app.use(cookieParser());
 const allowedOrigins = [];
 if (config.env === 'development') {
   allowedOrigins.push('http://localhost:3000');
-}
 
+}
 if (config.corsOriginFe) { 
   config.corsOriginFe.split(',').forEach(origin => allowedOrigins.push(origin.trim()));
 }
-console.log("allowedOrigins: ",allowedOrigins);
 
 const corsOptions = {
     origin: function (origin, callback) {
@@ -55,17 +54,14 @@ const corsOptions = {
       }
     },
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization', 'timezone', 'Accept', 'X-Requested-With'],
-      credentials: true, // Cho phép gửi cookie từ client
+      allowedHeaders: ['Content-Type', 'Authorization', 'timezone'],
+      credentials: true,
       optionsSuccessStatus: 200
   };
-
-console.log("corsOptions: ",corsOptions);
-
   app.use(cors(corsOptions));
 
   const uploadsPath = path.resolve(__dirname, '..', 'uploads');
-  app.use('uploads', express.static(uploadsPath));
+  app.use('/uploads', express.static(uploadsPath));
 
   if (config.env === 'development') {
     app.use(morgan('dev'));
@@ -75,11 +71,11 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/api', apiRoutes);
 
-app.use('/api/uploads', express.static(path.join(__dirname, '..', 'uploads'),{
-  setHeaders: (res, path) => {
-    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-  }
-}));
+// app.use('/api/uploads', express.static(path.join(__dirname, '..', 'uploads'),{
+//   setHeaders: (res, path) => {
+//     res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+//   }
+// }));
 
 app.use((req, res, next) => {
   next(new ApiError(StatusCodes.NOT_FOUND, 'API Route Not Found'));
