@@ -9,10 +9,6 @@ const userService = require('./user.service');
 const loginWithUsernameAndPassword = async (username, password) => {
   try {
       const user = await User.findOne({ where: { username } });
-      console.log("user: ", user);
-      
-      const pass = await bcrypt.compare(password, user.password)
-      console.log("pass:", pass);
       
       if (!user || !(await bcrypt.compare(password, user.password))) {
           throw new ApiError(StatusCodes.UNAUTHORIZED, 'Tên đăng nhập hoặc mật khẩu không chính xác');
