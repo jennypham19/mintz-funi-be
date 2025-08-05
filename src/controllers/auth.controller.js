@@ -3,30 +3,18 @@ const catchAsync = require('../utils/catchAsync');
 const authService = require('../services/auth.service');
 const tokenService = require('../services/token.service');
 const config = require('../config');
-const ApiError = require('../utils/ApiError');
 
 const login = catchAsync(async (req, res) => {
   const { username, password } = req.body;
   const user = await authService.loginWithUsernameAndPassword(username, password);
   const tokens = await tokenService.generateAuthTokens(user);
-  console.log("Generated tokens: ", tokens);
-  
 
   // Gửi refreshToken qua cookie httpOnly để tăng cường bảo mật
   res.cookie('refreshToken', tokens.refreshToken.token, {
     httpOnly: true,
-    // secure: true, // Chỉ bật secure nếu đang chạy trên môi trường production
     secure: config.env === 'production',
-    // sameSite: 'None', // Chỉ sử dụng 'None' nếu cần hỗ trợ cross-site requests
-    // Đặt sameSite là 'None' nếu bạn cần hỗ trợ cross-site requests, ví dụ như khi frontend và backend chạy trên các domain khác nhau
-    // Nếu không cần hỗ trợ cross-site requests, có thể để là "Lax" hoặc "Strict"
-    sameSite: config.env === 'production' ? 'None' : 'Lax',
     maxAge: config.jwt.refreshExpirationDays * 24 * 60 * 60 * 1000, // maxAge tính bằng mili giây
-    path: '/', // ⚠️ Bắt buộc nếu muốn frontend nhận được cookie
-    domain: '.vercel.app' // ⚠️ Giúp cookie dùng được cho subdomain
   });
-  console.log('✅ Gửi cookie refreshToken');
-
 
   // Xóa mật khẩu trước khi gửi về client
   user.password = undefined;
@@ -53,7 +41,6 @@ const logout = catchAsync(async (req, res) => {
 });
 
 const refreshToken = catchAsync(async (req, res) => {
-  console.log('cookies:', req.cookies);
   const oldRefreshToken = req.cookies.refreshToken;
   if (!oldRefreshToken) {
     throw new ApiError(StatusCodes.UNAUTHORIZED, 'Không tìm thấy refresh token');
@@ -64,7 +51,6 @@ const refreshToken = catchAsync(async (req, res) => {
   res.cookie('refreshToken', newTokens.refreshToken.token, {
     httpOnly: true,
     secure: config.env === 'production',
-    sameSite: config.env === 'production' ? 'None' : 'Lax',
     maxAge: config.jwt.refreshExpirationDays * 24 * 60 * 60 * 1000,
   });
 
