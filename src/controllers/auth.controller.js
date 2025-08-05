@@ -22,7 +22,11 @@ const login = catchAsync(async (req, res) => {
     // Nếu không cần hỗ trợ cross-site requests, có thể để là "Lax" hoặc "Strict"
     sameSite: config.env === 'production' ? 'None' : 'Lax',
     maxAge: config.jwt.refreshExpirationDays * 24 * 60 * 60 * 1000, // maxAge tính bằng mili giây
+    path: '/', // ⚠️ Bắt buộc nếu muốn frontend nhận được cookie
+    domain: '.vercel.app' // ⚠️ Giúp cookie dùng được cho subdomain
   });
+  console.log('✅ Gửi cookie refreshToken');
+
 
   // Xóa mật khẩu trước khi gửi về client
   user.password = undefined;
