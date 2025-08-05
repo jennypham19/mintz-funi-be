@@ -32,10 +32,10 @@ const uploadImageSlide = async(file) => {
     }
 
     const fileName = `image_slide_${Math.floor(Math.random() * 6)}.${file.originalname.split('.')[1]}`;
-    const savePath = path.join(PATH_DIR_SLIDE, fileName);
+    const savePath = path.join(PATH_DIR_SLIDE, file.originalname);
     await fs.mkdir(PATH_DIR_SLIDE, { recursive: true});
     await fs.writeFile(savePath, file.buffer);
-    return `/uploads/slide/${fileName}`;
+    return `/uploads/slide/${file.originalname}`;
 }
 
 const uploadImageServices = async(file) => {
@@ -60,10 +60,10 @@ const uploadImageDesignAndBuild = async(file) => {
     }
 
     const fileName = `image_design_build_${Math.floor(Math.random() * 6)}.${file.originalname.split('.')[1]}`;
-    const savePath = path.join(PATH_DIR_DESIGN_BUILD, fileName);
+    const savePath = path.join(PATH_DIR_DESIGN_BUILD, file.originalname);
     await fs.mkdir(PATH_DIR_DESIGN_BUILD, { recursive: true});
     await fs.writeFile(savePath, file.buffer);
-    return `/uploads/design-builds/${fileName}`;
+    return `/uploads/design-builds/${file.originalname}`;
 }
 
 module.exports = {
