@@ -16,7 +16,7 @@ const createPost = {
         'any.required': 'Đường dẫn ảnh là bắt buộc.',
     }),
 
-    category: Joi.string().required().messages({
+    category: Joi.number().integer().required().messages({
         'string.empty': 'Thể loại không được để trống.',
         'any.required': 'Thể loại là trường bắt buộc.',
     }),
@@ -54,7 +54,7 @@ const updatePost = {
   body: Joi.object().keys({
     title: Joi.string(),
     content: Joi.string(),
-    category: Joi.string(),
+    category: Joi.number().integer(),
     time: Joi.date().iso(), 
     authorName: Joi.string().allow(''),
     imageUrl: Joi.string().allow(null, ''),

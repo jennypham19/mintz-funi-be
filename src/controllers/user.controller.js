@@ -44,9 +44,9 @@ const resetUser = catchAsync(async (req, res) => {
     res.status(StatusCodes.OK).send({ success: true, message: "Reset password users fetched successfully", data: user });
 });
 
-const deleteUser = catchAsync(async (req, res) => {
-    await userService.deleteUserById(req.params.id, req.body);
-    res.status(StatusCodes.OK).send({success: true, message: 'Xóa tài khoản thành công'});
+const unactiveUser = catchAsync(async (req, res) => {
+    await userService.unactiveUserById(req.params.id, req.body);
+    res.status(StatusCodes.OK).send({success: true, message: 'Vô hiệu hóa tài khoản thành công'});
 });
 
 const activeUser = catchAsync(async (req, res) => {
@@ -54,14 +54,19 @@ const activeUser = catchAsync(async (req, res) => {
     res.status(StatusCodes.OK).send({success: true, message: 'Kích hoạt tài khoản thành công'});
 });
 
+const deleteUser = catchAsync(async (req, res) => {
+  await userService.deleteUser(req.params.id);
+  res.status(StatusCodes.OK).send({success: true, message: 'Xóa tài khoản thành công'});
+})
 
 module.exports = {
   createUser,
   getUserDashboard,
   getUser,
   updateUser,
-  deleteUser,
+  unactiveUser,
   getUsers, 
   resetUser,
-  activeUser
+  activeUser,
+  deleteUser
 };

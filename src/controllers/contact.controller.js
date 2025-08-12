@@ -10,7 +10,7 @@ const createContact = catchAsync(async (req, res) => {
 });
 
 const getContacts = catchAsync(async (req, res) => {
-  const queryOptions = pick(req.query, ['page', 'limit', 'searchTerm']);
+  const queryOptions = pick(req.query, ['page', 'limit', 'status', 'searchTerm']);
   const contacts = await contactService.queryContacts(queryOptions);
   res.status(StatusCodes.OK).send({ success: true, message: "Lấy danh sách thành công" ,data: contacts });
 });
@@ -30,10 +30,20 @@ const deleteContact = catchAsync(async (req, res) => {
     res.status(StatusCodes.NO_CONTENT).send();
 });
 
+const forwardContact = catchAsync(async (req, res) => {
+  const contact = await contactService.forwardCustomer(req.params.id, req.body);
+  res.status(StatusCodes.OK).send({
+    success: true,
+    message:'Chuyển tiếp thông tin khách hàng thành công',
+    data: contact
+  })
+})
+
 module.exports = {
   createContact,
   getContacts,
   markContactAsRead,
   deleteContact,
-  getContact
+  getContact,
+  forwardContact
 };

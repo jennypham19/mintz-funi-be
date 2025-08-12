@@ -1,4 +1,4 @@
-const { User, Op } = require('../models');
+const { User, Op, Post } = require('../models');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto')
 const ApiError = require('../utils/ApiError');
@@ -63,14 +63,14 @@ const getAllUsers = async ({ page, size, filter, searchTerm, status}) => {
       }
       
       if (status !== undefined && status !== 'all') {
-        whereClause.is_deleted = status;
+        whereClause.is_actived = status;
       }
 
       const {count, rows: users} = await User.findAndCountAll({
           where: whereClause,
           attributes: { exclude: ['password'] },
           order: [
-            ['is_deleted', 'ASC'],
+            ['is_actived', 'ASC'],
           ],
           limit: size,
           offset
@@ -119,8 +119,18 @@ const updateUserById = async (userId, updateBody, file) => {
 }
 
 
-const deleteUserById = async (userId, updateBody) => {
+const unactiveUserById = async (userId, updateBody) => {
   const user = await getUserById(userId);
+  const postByUser = await Post.count({
+    where: { authorId: userId}
+  })
+
+  //Nếu tồn tại bài viết do user tạo ra
+  if(postByUser> 0){
+    throw new ApiError(StatusCodes.CONFLICT, `Không thể vô hiệu hóa tài khoản ${user.username} vì tài khoản này đã tạo bài viết`);
+  }
+
+  // Nếu không tồn tại bài viết thì vô hiệu hóa 
   Object.assign(user, updateBody);
   await user.save();
   return user;
@@ -132,6 +142,20 @@ const activeUserById = async (userId, updateBody) => {
   await user.save();
   return user;
 };
+
+const deleteUser = async (userId) => {
+  const postByUser = await Post.count({
+    where: { authorId: userId}
+  })
+  const user = await getUserById(userId);
+  //Nếu tồn tại bài viết do user tạo ra
+  if(postByUser> 0){
+    throw new ApiError(StatusCodes.CONFLICT, `Không thể xóa tài khoản ${user.username} vì tài khoản này đã tạo bài viết`);
+  }
+
+  // Nếu không có bài viết thì xóa user
+  await User.destroy({ where: { id: userId }})
+}
 
 const resetUser = async(useId) => {
   const user = await getUserById(useId);
@@ -195,8 +219,9 @@ module.exports = {
   getAllUsers,
   getUserById,
   updateUserById,
-  deleteUserById,
+  unactiveUserById,
   queryUsers,
   resetUser,
-  activeUserById
+  activeUserById,
+  deleteUser
 };

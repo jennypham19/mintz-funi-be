@@ -6,6 +6,7 @@ const getContacts = {
     page: Joi.number().integer().min(1).default(1),
     limit: Joi.number().integer().min(1).max(100).default(12), 
     searchTerm: Joi.string().optional(),
+    status: Joi.number().integer().optional()
   }),
 };
 
@@ -32,10 +33,20 @@ const getContact = {
 const markAsRead = getContact;
 const deleteContact = getContact;
 
+const forwardContact = {
+  params: Joi.object().keys({
+    id: Joi.number().integer().required(),
+  }),
+  body: Joi.object().keys({
+    status: Joi.number().integer().required(),
+  })
+};
+
 module.exports = {
   createContact,
   getContact,
   markAsRead,
   deleteContact,
-  getContacts
+  getContacts,
+  forwardContact
 };

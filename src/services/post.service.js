@@ -143,7 +143,7 @@ const getPublishedPosts = async (queryOptions) => {
     status: 'approved',
     isPublished: true, // Chỉ lấy các bài đã được đăng tải
   };
-  if (category !== undefined && category !== 'Tất cả') {
+  if (category !== undefined && category !== '0') {
     whereConditions.category = category;
   }
   const {count, rows: posts} = await Post.findAndCountAll({

@@ -60,19 +60,27 @@ router
   );
 
 router
-  .route('/delete/:id')
+  .route('/unactive/:id')
   .patch(
     authorize('admin'), 
-    validate(userValidation.deleteUser), 
-    userController.deleteUser
+    validate(userValidation.unactiveUser), 
+    userController.unactiveUser
 );
 
 router
   .route('/active/:id')
   .patch(
     authorize('admin'), 
-    validate(userValidation.deleteUser), 
+    validate(userValidation.unactiveUser), 
     userController.activeUser
+);
+
+router
+  .route('/delete/:id')
+  .delete(
+    authorize('admin'), 
+    validate(userValidation.deleteUser), 
+    userController.deleteUser
 );
 
 module.exports = router;

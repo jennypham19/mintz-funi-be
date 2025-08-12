@@ -51,13 +51,19 @@ const updateUser = {
     .min(1), // Yêu cầu có ít nhất 1 trường để cập nhật
 };
 
-const deleteUser = {
+const unactiveUser = {
   params: Joi.object().keys({
     id: Joi.number().integer().required(),
   }),
   body: Joi.object().keys({
-    is_deleted: Joi.number().integer().required(),
+    is_actived: Joi.number().integer().required(),
   })
+};
+
+const deleteUser = {
+  params: Joi.object().keys({
+    id: Joi.number().integer().required(),
+  }),
 };
 
 module.exports = {
@@ -65,5 +71,6 @@ module.exports = {
   getUsers,
   getUser,
   updateUser,
-  deleteUser,
+  unactiveUser,
+  deleteUser
 };

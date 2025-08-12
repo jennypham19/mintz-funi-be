@@ -24,5 +24,7 @@ router.patch('/:id/read', validate(contactValidation.markAsRead), contactControl
 // Xóa
 router.delete('/:id', validate(contactValidation.deleteContact), contactController.deleteContact);
 
+// Chuyển tiếp
+router.patch('/forward/:id', validate(contactValidation.forwardContact), contactController.forwardContact);
 
 module.exports = router;

@@ -12,7 +12,12 @@ module.exports = (sequelize, DataTypes) => {
     phone: DataTypes.STRING,
     title: { type: DataTypes.STRING, allowNull: false },
     message: { type: DataTypes.TEXT, allowNull: false },
-    isRead: { type: DataTypes.BOOLEAN, defaultValue: false }
+    isRead: { type: DataTypes.BOOLEAN, defaultValue: false },
+    status: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
+    },
   }, {
     sequelize,
     modelName: 'Contact',

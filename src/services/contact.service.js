@@ -14,7 +14,7 @@ const createContact = async (contactBody) => {
 
 const queryContacts = async (queryOptions) => {
   try {
-    const { page, limit, searchTerm} = queryOptions;
+    const { page, limit, status, searchTerm} = queryOptions;
     const offset = page * limit;
     
     const whereClause = {}
@@ -25,11 +25,16 @@ const queryContacts = async (queryOptions) => {
         {phone: { [Op.iLike]: `%${searchTerm}%`}},
       ]
     }
+
+    if(status !== undefined && status !== 'all') {
+      whereClause.status = status;
+    }
+    
     const { count, rows: contacts} = await Contact.findAndCountAll({
       where: whereClause,
       limit,
       offset,
-      order: [['createdAt', 'DESC']]
+      order: [['status', 'ASC']]
     })
     const totalPages = Math.ceil(count / limit);
     return {
@@ -64,10 +69,21 @@ const deleteContactById = async (contactId) => {
   return contact;
 };
 
+const forwardCustomer = async(contactId, updateBody) => {
+  const contact = await getContactById(contactId);
+  if(!contact) {
+    throw new ApiError(StatusCodes.NOT_FOUND, `Không tồn tại thông tin của ${contact.name}`);
+  }
+  Object.assign(contact, updateBody);
+  await contact.save();
+  return contact;
+}
+
 module.exports = {
   createContact,
   queryContacts,
   getContactById,
   markContactAsRead,
   deleteContactById,
+  forwardCustomer
 };
