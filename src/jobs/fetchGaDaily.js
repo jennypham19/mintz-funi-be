@@ -2,8 +2,6 @@ const cron = require('node-cron');
 const gaService = require('../services/gaService');
 const { AnalyticsMetric } = require('../models');
 
-// cron schedule: chạy mỗi 1 giờ -> '0 * * * *' (hoặc chạy hàng ngày '0 2 * * *')
-const SCHEDULE = process.env.GA_CRON_SCHEDULE || '0 * * * *';
 
 const isoDateMinusDays = (days) => {
     const d = new Date();
@@ -37,7 +35,7 @@ const fetchAndStoreLastNDays = async(n = 7) => {
 
 // schedule job
 const startCron = () => {
-    cron.schedule(SCHEDULE, () => {
+    cron.schedule('0 0 2 * * *', () => {
         console.log('Running GA fetch job at', new Date().toISOString());
         fetchAndStoreLastNDays(7).catch(console.error);
     }, {
