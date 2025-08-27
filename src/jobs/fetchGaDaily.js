@@ -35,7 +35,7 @@ const fetchAndStoreLastNDays = async(n = 7) => {
 
 // schedule job
 const startCron = () => {
-    cron.schedule('0 0 2 * * *', () => {
+    cron.schedule('*/1 * * * *', () => {
         console.log('Running GA fetch job at', new Date().toISOString());
         fetchAndStoreLastNDays(7).catch(console.error);
     }, {
