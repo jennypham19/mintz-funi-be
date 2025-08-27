@@ -19,7 +19,8 @@ const createContact = {
     message: Joi.string().required(),
     createdAt: Joi.string().optional(),
     updatedAt: Joi.string().optional(),
-    isRead: Joi.number().integer().required()
+    isRead: Joi.number().integer().required(),
+    captchaCode: Joi.string().required(),
   }),
 };
 

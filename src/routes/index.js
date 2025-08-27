@@ -9,6 +9,7 @@ const postRoute = require('../routes/post.router');
 const contactRoute = require('../routes/contact.route');
 const settingsRoute = require('../routes/settings.route');
 const permissionRoute = require('../routes/permission.route');
+const analyticsRoute = require('../routes/analytics.route');
 
 const router = express.Router();
 
@@ -37,6 +38,10 @@ const defaultRoutes = [
   {
     path: '/permission',
     route: permissionRoute,
+  },
+  {
+    path: '/analytics',
+    route: analyticsRoute,
   },
 ];
 

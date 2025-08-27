@@ -47,3 +47,4 @@ jspm_packages/
 *.njsproj
 *.sln
 *.sw?
+/src/config/funi-470307-89b2a5d90c48.json

@@ -4,10 +4,10 @@ const ApiError = require('../utils/ApiError');
 const { StatusCodes } = require('http-status-codes');
 
 const createContact = async (contactBody) => {
-  const { name, email, phone, title, message } = contactBody;
+  const { name, email, phone, title, message, captchaCode } = contactBody;
   // Validation cơ bản ở service layer
-  if (!name || !email || !message || !phone || !title) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, 'Vui lòng điền các trường Tên, Email, Số điện thoại, Tiêu đề và Nội dung.');
+  if (!name || !email || !message || !phone || !title || !captchaCode) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Vui lòng điền các trường Tên, Email, Số điện thoại, Tiêu đề, Nội dung và mã Captcha.');
   }
   return await Contact.create(contactBody);
 };

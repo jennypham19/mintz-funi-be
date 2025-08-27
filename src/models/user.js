@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     password: { type: DataTypes.STRING, allowNull: false },
     fullName: { type: DataTypes.STRING, allowNull: false },
     role: {
-      type: DataTypes.ENUM('admin', 'employee'),
+      type: DataTypes.ENUM('admin', 'employee', 'mode'),
       allowNull: false,
       defaultValue: 'employee'
     },
@@ -39,6 +39,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 0
     },
+    position: { type: DataTypes.STRING, allowNull: true},
   }, {
     sequelize,
     modelName: 'User',

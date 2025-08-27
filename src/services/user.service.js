@@ -30,7 +30,7 @@ const createUserService = async (userBody, file) => {
   // Hash bằng bcrypt
   const hashedPassword = await bcrypt.hash(userBody.password, 10);
   const user = await User.create({ ...userBody, password: hashedPassword, is_default: 1 });
-  user.password = undefined; // Không trả về password
+  // user.password = undefined; // Không trả về password
   // await mailService.sendMail({
   //   to: userBody.email,
   //   subject: 'Thông tin đăng nhập hệ thống Mintz',
@@ -52,7 +52,21 @@ const getAllUsers = async ({ page, size, filter, searchTerm, status}) => {
     try {
       const offset = page * size;
 
-      const whereClause = { ...filter };
+      const whereClause = {};
+
+      // Nếu có filter.role thì loại bỏ các role này
+      // if (filter.role) {
+      //   if (Array.isArray(filter.role)) {
+      //     // nếu là mảng
+      //     whereClause.role = { [Op.notIn]: filter.role };
+      //   } else {
+      //     // nếu chỉ là string
+      //     whereClause.role = { [Op.notIn]: [filter.role] };
+      //   }
+      // }
+      if(filter.role !== undefined && filter.role !== 'all') {
+        whereClause.role = filter.role
+      }
       
       if(searchTerm){
         whereClause[Op.or] = [
@@ -71,6 +85,7 @@ const getAllUsers = async ({ page, size, filter, searchTerm, status}) => {
           attributes: { exclude: ['password'] },
           order: [
             ['is_actived', 'ASC'],
+            ['createdAt', 'DESC']
           ],
           limit: size,
           offset

@@ -11,7 +11,7 @@ const router = express.Router();
 router.post('/send', validate(contactValidation.createContact), contactController.createContact);
 
 // Các route dưới đây yêu cầu đăng nhập và có vai trò
-router.use(protect, authorize('admin', 'employee'));
+router.use(protect, authorize('admin', 'employee', 'mode'));
 
 router.get('/', validate(contactValidation.getContacts), contactController.getContacts);
 

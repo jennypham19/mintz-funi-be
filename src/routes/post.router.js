@@ -25,21 +25,21 @@ router.post(
 router
   .route('/')
   .post(authorize('employee'), validate(postValidation.createPost), postController.createPost)
-  .get(authorize('admin', 'employee'), validate(postValidation.getPosts), postController.getPosts);
+  .get(authorize('admin', 'employee', 'mode'), validate(postValidation.getPosts), postController.getPosts);
 
 
 router.patch(
   '/:id/review',
-  authorize('admin'),
+  authorize('admin', 'mode'),
   validate(postValidation.reviewPost),
   postController.reviewPost
 );
 
 router
   .route('/:id')
-  .get(authorize('admin', 'employee'), validate(postValidation.getPost), postController.getPostById)
+  .get(authorize('admin', 'employee', 'mode'), validate(postValidation.getPost), postController.getPostById)
   .patch(authorize('employee'), validate(postValidation.updatePost), postController.updatePost)
-  .delete(authorize('admin', 'employee'), validate(postValidation.deletePost), postController.deletePost);
+  .delete(authorize('admin', 'employee', 'mode'), validate(postValidation.deletePost), postController.deletePost);
 
 router
   .route('/:id/publish')

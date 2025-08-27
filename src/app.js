@@ -14,6 +14,7 @@ const apiRoutes = require('./routes');
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger.config');
+const { startCron } = require('./jobs/fetchGaDaily.js');
 
 const app = express();
 
@@ -70,6 +71,20 @@ const corsOptions = {
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/api', apiRoutes);
+
+if (process.env.NODE_ENV !== 'test') {
+  try {
+    Promise.all([ 
+        startCron(),
+    ]).then(() => {
+        logger.info('All cron jobs initialization process started.');
+    }).catch(error => {
+        logger.error('Failed during cron jobs initialization:', error);
+    });
+  } catch (error) {
+    logger.error('Synchronous error initializing cron jobs:', error);
+  }
+}
 
 // app.use('/api/uploads', express.static(path.join(__dirname, '..', 'uploads'),{
 //   setHeaders: (res, path) => {

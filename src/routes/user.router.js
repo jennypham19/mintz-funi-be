@@ -22,7 +22,7 @@ router
 router
   .route('/')
   .get(
-    authorize('admin','employee'),
+    authorize('admin','employee', 'mode'),
     validate(userValidation.getUsers), 
     userController.getUserDashboard
   )
@@ -45,7 +45,7 @@ router
 router
   .route('/update/:id')
   .put(
-    authorize('admin', 'employee'), 
+    authorize('admin', 'employee', 'mode'), 
     upload.single('avatar_url'), 
     validate(userValidation.updateUser), 
     userController.updateUser
