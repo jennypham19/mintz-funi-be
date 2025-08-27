@@ -8,7 +8,7 @@ const overviewTraffic = async (queryOptions) => {
         const { from, to } = queryOptions;
 
         const whereClause = {
-            propertyId
+            property_id: propertyId
         };
 
         if(from && to){

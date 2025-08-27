@@ -42,7 +42,7 @@ const startCron = () => {
         fetchAndStoreLastNDays(7).catch(console.error);
     }, {
         scheduled: true,
-        timezone: process.env.TZ
+        timezone: "Asia/Ho_Chi_Minh"
     })
 }
 
