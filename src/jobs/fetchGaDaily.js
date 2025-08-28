@@ -10,9 +10,9 @@ const isoDateMinusDays = (days) => {
 }
 
 // job: fetch last N days (default 7) and upsert into DB
-const fetchAndStoreLastNDays = async(n = 7) => {
+const fetchAndStoreLastNDays = async(n = 1) => {
     const end = isoDateMinusDays(0);
-    const startDate = isoDateMinusDays(n - 1);
+    const startDate = isoDateMinusDays(n);
     try {
         const rows = await gaService.getDailyMetrics(startDate, end);
         for (const r of rows) {

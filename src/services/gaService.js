@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 
 const PROPERTY_ID = process.env.GA_PROPERTY_ID;
+console.log("path: ",path.join(__dirname,'..', process.env.GA_SERVICE_KEYFILE));
+
 
 const getJwtClient = () => {
     let key;
