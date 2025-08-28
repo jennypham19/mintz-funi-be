@@ -36,9 +36,10 @@ const fetchAndStoreLastNDays = async(n = 7) => {
     }
 }
 
-const fetchAndStoreRealtime = async() => {
+const fetchAndStoreRealtime = async(n=1) => {
+    const date = isoDateMinusDays(n);
     try {
-        const rows = await gaService.getRealtimeUsers();
+        const rows = await gaService.getRealtimeUsers(date);
         for(const r of rows) {
             await AnalyticsRealtime.upsert({
                 active_users: r.activeUsers,
@@ -63,7 +64,7 @@ const startCron = () => {
 
 const startCronRealtime = () => {
     cron.schedule('*/10 * * * *', () => {
-        fetchAndStoreRealtime().catch(console.error);
+        fetchAndStoreRealtime(1).catch(console.error);
     }, {
         scheduled: true,
         timezone: "Asia/Ho_Chi_Minh" 
