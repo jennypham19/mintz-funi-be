@@ -4,15 +4,21 @@ const path = require('path');
 
 const PROPERTY_ID = process.env.GA_PROPERTY_ID;
 console.log("path: ",path.join(__dirname, `..${process.env.GA_SERVICE_KEYFILE}`));
+console.log("path1: ",path.join(process.env.GA_SERVICE_KEYFILE));
+
 
 
 const getJwtClient = () => {
     let key;
     
     
-    // if(process.env.GA_SERVICE_KEYFILE) {
-    //     key = require(path.join(__dirname, `..${process.env.GA_SERVICE_KEYFILE}`));
-    // } else 
+    if(process.env.GA_SERVICE_KEYFILE) {
+        if(process.env.NODE_ENV === 'development'){
+            key = require(path.join(__dirname, `..${process.env.GA_SERVICE_KEYFILE}`));
+        }else if(process.env.NODE_ENV === 'production'){
+            key = require(path.join(process.env.GA_SERVICE_KEYFILE));
+        }
+    } else 
     if(process.env.GA_SERVICE_KEY_JSON) {
         key = JSON.parse(process.env.GA_SERVICE_KEY_JSON);
     } else {
