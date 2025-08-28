@@ -93,7 +93,7 @@ const getRealtimeUsers = async() => {
         ],
     };
 
-    const res = await analyticsData.properties.runReport({
+    const res = await analyticsData.properties.runRealtimeReport({
         property: `properties/${PROPERTY_ID}`,
         requestBody
     })
