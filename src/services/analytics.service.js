@@ -1,11 +1,12 @@
-const { AnalyticsMetric, Op } = require('../models');
+const { AnalyticsMetric, Op, Sequelize, AnalyticsRealtime } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { StatusCodes } = require('http-status-codes');
+const dayjs = require("dayjs");
 
 const overviewTraffic = async (queryOptions) => {
     try {
         const propertyId = process.env.GA_PROPERTY_ID;
-        const { from, to } = queryOptions;
+        const { from, to, pagePath } = queryOptions;
 
         const whereClause = {
             property_id: propertyId
@@ -13,6 +14,10 @@ const overviewTraffic = async (queryOptions) => {
 
         if(from && to){
             whereClause.date = { [Op.between]: [from, to]};
+        }
+
+        if(pagePath !== 'ALL' && pagePath !== null) {
+            whereClause.page_path = pagePath
         }
 
         const rows = await AnalyticsMetric.findAll({
@@ -34,6 +39,47 @@ const overviewTraffic = async (queryOptions) => {
     }
 }
 
+const queryListPagePaths = async(queryOptions) => {
+    try {
+        const propertyId = process.env.GA_PROPERTY_ID;
+        const { from, to } = queryOptions;
+        const whereClause = {
+            property_id: propertyId
+        };
+
+        if(from && to){
+            whereClause.date = { [Op.between]: [from, to]};
+        }
+
+        const paths = await AnalyticsMetric.findAll({
+            where: whereClause,
+            attributes: ['page_path'],
+            group: ['page_path'],
+            order: [['page_path','ASC']]
+        });
+        const result = paths.map(p => p.page_path).filter(Boolean);
+        return result
+    } catch (error) {
+        throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, "Lấy danh sách thất bại: " + error.message)
+    }
+}
+
+const overviewRealtime = async() => {
+    try {
+        const from = dayjs().subtract(24, "hour").toDate();
+        const data = await AnalyticsRealtime.findAll({
+            where: { timestamp: { $gte: from}},
+            order: [["timestamp", "ASC"]],
+        })
+        return data        
+    } catch (error) {
+        throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, "Lấy danh sách thất bại: " + error.message)
+    }
+
+}
+
 module.exports = {
-    overviewTraffic
+    overviewTraffic,
+    queryListPagePaths,
+    overviewRealtime
 }

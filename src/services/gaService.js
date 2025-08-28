@@ -3,10 +3,6 @@ const fs = require('fs');
 const path = require('path');
 
 const PROPERTY_ID = process.env.GA_PROPERTY_ID;
-console.log("path: ",path.join(__dirname, `..${process.env.GA_SERVICE_KEYFILE}`));
-console.log("path1: ",path.join(process.env.GA_SERVICE_KEYFILE));
-
-
 
 const getJwtClient = () => {
     let key;
@@ -23,7 +19,6 @@ const getJwtClient = () => {
     } else {
         throw new Error('Missing GA service account key (GA_SERVICE_KEYFILE or GA_SERVICE_KEY_JSON).');
     }
-    console.log("key: ", key);
 
     const jwt = new google.auth.JWT({
         email: key.client_email,
@@ -55,9 +50,9 @@ const getDailyMetrics = async (startDate, endDate, options = {}) => {
             { name: 'screenPageViews'}, // page views
             { name: 'sessions'},
         ],
-        dimensions: [{ name: 'date'}],
+        // dimensions: [{ name: 'date'}],
         // optionally add dimension for pagePath
-        // dimensions: [{name:'date'},{name:'pagePath'}]
+        dimensions: [{name:'date'},{name:'pagePath'}],
         ...options.requestBody
     };
 
@@ -69,14 +64,45 @@ const getDailyMetrics = async (startDate, endDate, options = {}) => {
     // parse rows
     const rows = (res.data.rows || []).map(r => {
         const dims = r.dimensionValues || [];
+        
         const mets = r.metricValues || [];
         // assuming dimensions: date
         return {
-        date: dims[0] ? dims[0].value : null,
-        activeUsers: mets[0] ? parseInt(mets[0].value || '0', 10) : 0,
-        pageViews: mets[1] ? parseInt(mets[1].value || '0', 10) : 0,
-        sessions: mets[2] ? parseInt(mets[2].value || '0', 10) : 0,
-        raw: r
+            date: dims[0] ? dims[0].value : null,
+            pagePath: dims[1]?.value || null,
+            activeUsers: mets[0] ? parseInt(mets[0].value || '0', 10) : 0,
+            pageViews: mets[1] ? parseInt(mets[1].value || '0', 10) : 0,
+            sessions: mets[2] ? parseInt(mets[2].value || '0', 10) : 0,
+            raw: r
+        };
+    });
+
+    return rows;
+}
+
+const getRealtimeUsers = async() => {
+    const jwt = getJwtClient();
+    await jwt.authorize();
+    const analyticsData = google.analyticsdata({
+        version: 'v1beta',
+        auth: jwt
+    });
+    const requestBody ={
+        metrics: [
+            { name: 'activeUsers'},
+        ],
+    };
+
+    const res = await analyticsData.properties.runReport({
+        property: `properties/${PROPERTY_ID}`,
+        requestBody
+    })
+    // parse rows
+    const rows = (res.data.rows || []).map(r => {
+        const mets = r.metricValues || [];
+        return {
+            activeUsers: mets[0] ? parseInt(mets[0].value || '0', 10) : 0,
+            timestamp: new Date(),
         };
     });
 
@@ -84,5 +110,6 @@ const getDailyMetrics = async (startDate, endDate, options = {}) => {
 }
 
 module.exports = {
-  getDailyMetrics
+  getDailyMetrics,
+  getRealtimeUsers
 };

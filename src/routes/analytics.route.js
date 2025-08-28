@@ -9,4 +9,8 @@ router.use(protect, authorize('admin', 'employee', 'mode'));
 
 router.get('/overview', analyticsController.overview);
 
+router.get('/page-paths', analyticsController.getListPathPages);
+
+router.get('/realtime', analyticsController.getOverviewRealtime);
+
 module.exports = router;

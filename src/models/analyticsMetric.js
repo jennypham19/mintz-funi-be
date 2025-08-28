@@ -45,8 +45,8 @@ module.exports = (sequelize, DataTypes) => {
             sequelize,
             modelName: 'AnalyticsMetric',
             indexes: [
-                { fields: ['propertyId', 'date'] },
-                { fields: ['pagePath'] }
+                { fields: ['property_id', 'date'] },
+                { fields: ['page_path'] }
             ],
             timestamps: true,
             createdAt: "created_at",

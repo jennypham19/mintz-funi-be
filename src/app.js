@@ -14,7 +14,7 @@ const apiRoutes = require('./routes');
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger.config');
-const { startCron } = require('./jobs/fetchGaDaily.js');
+const { startCron, startCronRealtime } = require('./jobs/fetchGaDaily.js');
 
 const app = express();
 
@@ -76,6 +76,7 @@ if (process.env.NODE_ENV !== 'test') {
   try {
     Promise.all([ 
         startCron(),
+        startCronRealtime(),
     ]).then(() => {
         logger.info('All cron jobs initialization process started.');
     }).catch(error => {
