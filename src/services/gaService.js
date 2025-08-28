@@ -1,13 +1,13 @@
 const { google } = require('googleapis');
 const fs = require('fs');
+const path = require('path');
 
-const KEYFILE = process.env.GA_SERVICE_KEYFILE || process.env.GA_SERVICE_KEY_JSON;
 const PROPERTY_ID = process.env.GA_PROPERTY_ID;
 
 const getJwtClient = () => {
     let key;
     if(process.env.GA_SERVICE_KEYFILE) {
-        key = require(process.env.GA_SERVICE_KEYFILE);
+        key = require(path.join(__dirname,'..', process.env.GA_SERVICE_KEYFILE));
     } else if(process.env.GA_SERVICE_KEY_JSON) {
         key = JSON.parse(process.env.GA_SERVICE_KEY_JSON);
     } else {
@@ -40,7 +40,7 @@ const getDailyMetrics = async (startDate, endDate, options = {}) => {
     const requestBody ={
         dateRanges: [{ startDate, endDate }],
         metrics: [
-            { name: 'active_users'},
+            { name: 'activeUsers'},
             { name: 'screenPageViews'}, // page views
             { name: 'sessions'},
         ],

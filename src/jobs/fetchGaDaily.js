@@ -29,7 +29,7 @@ const fetchAndStoreLastNDays = async(n = 7) => {
         }
         console.log(`GA metrics synced for ${startDate}..${end}: ${rows.length} rows`);
     } catch (error) {
-        console.error('Error fetching GA metrics', err);
+        console.error('Error fetching GA metrics', error);
     }
 }
 
