@@ -80,7 +80,7 @@ const getDailyMetrics = async (startDate, endDate, options = {}) => {
     return rows;
 }
 
-const getRealtimeUsers = async(date) => {
+const getRealtimeUsers = async() => {
     const jwt = getJwtClient();
     await jwt.authorize();
     const analyticsData = google.analyticsdata({
@@ -88,7 +88,6 @@ const getRealtimeUsers = async(date) => {
         auth: jwt
     });
     const requestBody ={
-        dateRanges: [{ date }],
         metrics: [
             { name: 'activeUsers'},
         ],
