@@ -10,9 +10,10 @@ const getJwtClient = () => {
     let key;
     
     
-    if(process.env.GA_SERVICE_KEYFILE) {
-        key = require(path.join(__dirname, `..${process.env.GA_SERVICE_KEYFILE}`));
-    } else if(process.env.GA_SERVICE_KEY_JSON) {
+    // if(process.env.GA_SERVICE_KEYFILE) {
+    //     key = require(path.join(__dirname, `..${process.env.GA_SERVICE_KEYFILE}`));
+    // } else 
+    if(process.env.GA_SERVICE_KEY_JSON) {
         key = JSON.parse(process.env.GA_SERVICE_KEY_JSON);
     } else {
         throw new Error('Missing GA service account key (GA_SERVICE_KEYFILE or GA_SERVICE_KEY_JSON).');
