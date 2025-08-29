@@ -2,6 +2,7 @@ const { AnalyticsMetric, Op, Sequelize, AnalyticsRealtime } = require('../models
 const ApiError = require('../utils/ApiError');
 const { StatusCodes } = require('http-status-codes');
 const dayjs = require("dayjs");
+const { fn, col, where } = require('sequelize')
 
 const overviewTraffic = async (queryOptions) => {
     try {
@@ -66,9 +67,9 @@ const queryListPagePaths = async(queryOptions) => {
 
 const overviewRealtime = async() => {
     try {
-        const from = dayjs().subtract(24, "hour").toDate();
+        const date = dayjs().format("YYYY-MM-DD"); 
         const data = await AnalyticsRealtime.findAll({
-            where: { timestamp: { $gte: from}},
+            where: where(fn("DATE", col("timestamp")), date),
             order: [["timestamp", "ASC"]],
         })
         return data        
