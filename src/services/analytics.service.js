@@ -54,7 +54,10 @@ const queryListPagePaths = async(queryOptions) => {
 
         const paths = await AnalyticsMetric.findAll({
             where: whereClause,
-            attributes: ['page_path'],
+            attributes: [
+                'page_path',
+                [Sequelize.fn('MAX', Sequelize.col('page_title')), 'page_title'],
+            ],
             group: ['page_path'],
             order: [['page_path','ASC']]
         });

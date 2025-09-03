@@ -22,6 +22,7 @@ const fetchAndStoreLastNDays = async(n = 7) => {
                 property_id: process.env.GA_PROPERTY_ID,
                 date: r.date,
                 page_path: r.pagePath,
+                page_title: r.pageTitle,
                 active_users: r.activeUsers,
                 page_views: r.pageViews,
                 sessions: r.sessions,

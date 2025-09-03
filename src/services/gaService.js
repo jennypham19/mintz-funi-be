@@ -52,7 +52,11 @@ const getDailyMetrics = async (startDate, endDate, options = {}) => {
         ],
         // dimensions: [{ name: 'date'}],
         // optionally add dimension for pagePath
-        dimensions: [{name:'date'},{name:'pagePath'}],
+        dimensions: [
+            { name: 'date' },
+            { name: 'pagePath' },
+            { name: 'pageTitle'}
+        ],
         ...options.requestBody
     };
 
@@ -70,6 +74,7 @@ const getDailyMetrics = async (startDate, endDate, options = {}) => {
         return {
             date: dims[0] ? dims[0].value : null,
             pagePath: dims[1]?.value || null,
+            pageTitle: dims[2].value,
             activeUsers: mets[0] ? parseInt(mets[0].value || '0', 10) : 0,
             pageViews: mets[1] ? parseInt(mets[1].value || '0', 10) : 0,
             sessions: mets[2] ? parseInt(mets[2].value || '0', 10) : 0,

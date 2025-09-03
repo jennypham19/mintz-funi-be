@@ -39,7 +39,11 @@ module.exports = (sequelize, DataTypes) => {
             raw_response: {
                 type: DataTypes.JSONB,
                 allowNull: true
-            }
+            },
+            page_title: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
         },
         {
             sequelize,
