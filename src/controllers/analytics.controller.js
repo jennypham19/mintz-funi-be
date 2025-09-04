@@ -4,13 +4,13 @@ const analyticsService  = require('../services/analytics.service');
 const pick = require('../utils/pick');
 
 const overview = catchAsync(async (req, res) => {
-    const queryOptions = pick(req.query, ['from', 'to', 'pagePath']);
+    const queryOptions = pick(req.query, ['from', 'to', 'pagePath', 'date']);
       const data = await analyticsService.overviewTraffic(queryOptions);
       res.status(StatusCodes.OK).send({ success: true, message: "Lấy dữ liệu thành công" ,data: data });
 })
 
 const getListPathPages = catchAsync(async (req, res) => {
-    const queryOptions = pick(req.query, ['from', 'to']);
+    const queryOptions = pick(req.query, ['from', 'to', 'date']);
       const data = await analyticsService.queryListPagePaths(queryOptions);
       res.status(StatusCodes.OK).send({ success: true, message: "Lấy dữ liệu thành công" ,data: data });
 })

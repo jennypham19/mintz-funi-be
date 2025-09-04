@@ -7,15 +7,21 @@ const { fn, col, where } = require('sequelize')
 const overviewTraffic = async (queryOptions) => {
     try {
         const propertyId = process.env.GA_PROPERTY_ID;
-        const { from, to, pagePath } = queryOptions;
+        const { from, to, pagePath, date } = queryOptions;
 
         const whereClause = {
             property_id: propertyId
         };
 
-        if(from && to){
-            whereClause.date = { [Op.between]: [from, to]};
+         // nếu có chọn date cụ thể trong select thì ưu tiên
+        if(date) {
+            whereClause.date = date; // bản ghi đúng ngày được chọn
         }
+
+        // else if(from && to){
+        //     // nếu không thì fallback về khoảng ngày mặc định
+        //     whereClause.date = { [Op.between]: [from, to]};
+        // }
 
         if(pagePath !== 'ALL' && pagePath !== null) {
             whereClause.page_path = pagePath
@@ -43,26 +49,30 @@ const overviewTraffic = async (queryOptions) => {
 const queryListPagePaths = async(queryOptions) => {
     try {
         const propertyId = process.env.GA_PROPERTY_ID;
-        const { from, to } = queryOptions;
+        const { from, to, date } = queryOptions;
         const whereClause = {
             property_id: propertyId
         };
-
-        if(from && to){
-            whereClause.date = { [Op.between]: [from, to]};
+         // nếu có chọn date cụ thể trong select thì ưu tiên
+        if(date) {
+            whereClause.date = date; // bản ghi đúng ngày được chọn
         }
+
+        // if(from && to){
+        //     whereClause.date = { [Op.between]: [from, to]};
+        // }
 
         const paths = await AnalyticsMetric.findAll({
             where: whereClause,
             attributes: [
                 'page_path',
-                [Sequelize.fn('MAX', Sequelize.col('page_title')), 'page_title'],
+                'page_title'
             ],
-            group: ['page_path'],
+            group: ['page_path', 'page_title'],
             order: [['page_path','ASC']]
         });
         const result = paths.map(p => p.page_path).filter(Boolean);
-        return result
+        return paths
     } catch (error) {
         throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, "Lấy danh sách thất bại: " + error.message)
     }
