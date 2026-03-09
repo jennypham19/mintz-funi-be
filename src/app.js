@@ -61,7 +61,6 @@ const corsOptions = {
   };
 
   app.use(cors(corsOptions));
-  app.options('*', cors(corsOptions));
 
   const uploadsPath = path.resolve(__dirname, '..', 'uploads');
   app.use('/uploads', express.static(uploadsPath));
