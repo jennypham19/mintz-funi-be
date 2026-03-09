@@ -45,21 +45,39 @@ if (config.corsOriginFe) {
   config.corsOriginFe.split(',').forEach(origin => allowedOrigins.push(origin.trim()));
 }
 
-const corsOptions = {
+// const corsOptions = {
+//     origin: function (origin, callback) {
+//       if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+//         callback(null, true);
+//       } else {
+//         logger.error(`CORS: Blocked origin - ${origin}. Allowed: ${allowedOrigins.join(', ')}`);
+//         callback(new Error('Not allowed by CORS'));
+//       }
+//     },
+//       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+//       allowedHeaders: ['Content-Type', 'Authorization', 'timezone'],
+//       credentials: true,
+//       optionsSuccessStatus: 200
+//   };
+
+  const corsOptions = {
     origin: function (origin, callback) {
-      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      if (!origin || origin.startsWith("http://localhost")) {
+        callback(null, true);
+      } else if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        logger.error(`CORS: Blocked origin - ${origin}. Allowed: ${allowedOrigins.join(', ')}`);
-        callback(new Error('Not allowed by CORS'));
+        callback(new Error("Not allowed by CORS"));
       }
     },
-      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization', 'timezone'],
-      credentials: true,
-      optionsSuccessStatus: 200
+    methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+    allowedHeaders: ['Content-Type','Authorization','timezone'],
+    credentials: true,
+    optionsSuccessStatus: 200
   };
+
   app.use(cors(corsOptions));
+  app.options('*', cors(corsOptions));
 
   const uploadsPath = path.resolve(__dirname, '..', 'uploads');
   app.use('/uploads', express.static(uploadsPath));

@@ -39,11 +39,19 @@ const forwardContact = catchAsync(async (req, res) => {
   })
 })
 
+// Lấy danh sách thông tin khách hàng phục vụ cho web mộc
+const getContactsForWooden = catchAsync(async (req, res) => {
+  const queryOptions = pick(req.query, ['page', 'limit', 'searchTerm']);
+  const contacts = await contactService.queryContactsForWooden(queryOptions);
+  res.status(StatusCodes.OK).send({ success: true, message: "Lấy danh sách thành công" ,data: contacts });
+});
+
 module.exports = {
   createContact,
   getContacts,
   markContactAsRead,
   deleteContact,
   getContact,
-  forwardContact
+  forwardContact,
+  getContactsForWooden
 };

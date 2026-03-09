@@ -10,6 +10,8 @@ const router = express.Router();
 // Route này là public, không cần đăng nhập
 router.post('/send', validate(contactValidation.createContact), contactController.createContact);
 
+router.get('/customer-for-wooden', validate(contactValidation.getContacts), contactController.getContactsForWooden)
+
 // Các route dưới đây yêu cầu đăng nhập và có vai trò
 router.use(protect, authorize('admin', 'employee', 'mode'));
 

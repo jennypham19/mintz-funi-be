@@ -79,11 +79,45 @@ const forwardCustomer = async(contactId, updateBody) => {
   return contact;
 }
 
+// Lấy danh sách thông tin khách hàng phục vụ cho bên web mộc
+const queryContactsForWooden = async (queryOptions) => {
+  try {
+    const { page, limit, searchTerm } = queryOptions;
+    const offset = page * limit;
+    
+    const whereClause = { status: 1 }
+    if(searchTerm){
+      whereClause[Op.or] = [
+        {name: { [Op.iLike]: `%${searchTerm}%`}},
+        {email: { [Op.iLike]: `%${searchTerm}%`}},
+        {phone: { [Op.iLike]: `%${searchTerm}%`}},
+      ]
+    }
+    
+    const { count, rows: contacts} = await Contact.findAndCountAll({
+      where: whereClause,
+      limit,
+      offset,
+      order: [['status', 'ASC']]
+    })
+    const totalPages = Math.ceil(count / limit);
+    return {
+      contacts,
+      totalPages,
+      currentPage: page,
+      totalContact: count,
+    }; 
+  } catch (error) {
+    throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, "Lấy danh sách thất bại " + error.message)
+  }
+};
+
 module.exports = {
   createContact,
   queryContacts,
   getContactById,
   markContactAsRead,
   deleteContactById,
-  forwardCustomer
+  forwardCustomer,
+  queryContactsForWooden
 };
