@@ -89,23 +89,38 @@ const queryContactsForWooden = async (queryOptions) => {
     if(searchTerm){
       whereClause[Op.or] = [
         {name: { [Op.iLike]: `%${searchTerm}%`}},
-        {email: { [Op.iLike]: `%${searchTerm}%`}},
         {phone: { [Op.iLike]: `%${searchTerm}%`}},
       ]
     }
     
-    const { count, rows: contacts} = await Contact.findAndCountAll({
+    const { count, rows: contactsDB} = await Contact.findAndCountAll({
       where: whereClause,
       limit,
       offset,
-      order: [['status', 'ASC']]
+      order: [['updatedAt', 'ASC']]
     })
     const totalPages = Math.ceil(count / limit);
+    const contacts = contactsDB.map((contact) => {
+      const newContact = contact.toJSON();
+      return{
+        id: newContact.id,
+        name: newContact.name,
+        phone: newContact.phone,
+        email: newContact.email,
+        title: newContact.title,
+        requiredNote: newContact.message,
+        status: newContact.status,
+        isRead: newContact.isRead,
+        captchaCode: newContact.captchaCode,
+        createdAt: newContact.createdAt,
+        updatedAt: newContact.updatedAt
+      }
+    })
     return {
-      contacts,
+      data: contacts,
       totalPages,
       currentPage: page,
-      totalContact: count,
+      total: count,
     }; 
   } catch (error) {
     throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, "Lấy danh sách thất bại " + error.message)
