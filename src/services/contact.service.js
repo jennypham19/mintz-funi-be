@@ -106,12 +106,9 @@ const queryContactsForWooden = async (queryOptions) => {
         id: newContact.id,
         name: newContact.name,
         phone: newContact.phone,
-        email: newContact.email,
         title: newContact.title,
+        type: 'FUNI',
         requiredNote: newContact.message,
-        status: newContact.status,
-        isRead: newContact.isRead,
-        captchaCode: newContact.captchaCode,
         createdAt: newContact.createdAt,
         updatedAt: newContact.updatedAt
       }
